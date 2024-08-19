@@ -10,6 +10,12 @@ export interface Media {
   selected?: boolean;
 }
 
+declare var process: {
+  env: {
+    ANGULAR_APP_BACKEND_URL: string;
+  }
+};
+
 @Injectable({
   providedIn: 'root',
 })
