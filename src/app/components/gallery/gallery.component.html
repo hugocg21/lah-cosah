@@ -69,7 +69,7 @@
       <button (click)="closeModal()" class="absolute top-2 right-2 text-white text-2xl">&times;</button>
 
       <ng-container *ngIf="isVideo(selectedMedia.url); else imageModal">
-        <video [src]="selectedMedia.url" controls clFass="max-h-screen"></video>
+        <video [src]="selectedMedia.url" controls class="max-h-screen"></video>
       </ng-container>
 
       <ng-template #imageModal>
