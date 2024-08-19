@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../environments/environment';
 
 export interface Media {
   id: number;
@@ -11,11 +10,16 @@ export interface Media {
   selected?: boolean;
 }
 
+export const environment = {
+  production: true,
+  backendUrl: 'https://log-in-app-dee8693134d9.herokuapp.com'
+};
+
 @Injectable({
   providedIn: 'root',
 })
 export class MediaService {
-  private baseUrl = environment.backendUrl;
+  private baseUrl = environment.backendUrl + '/api/media';
 
   constructor(private http: HttpClient) {}
 
