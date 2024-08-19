@@ -29,7 +29,7 @@ export class AuthService {
 
   setAuthHeaders(username: string, password: string): void {
     sessionStorage.setItem('authHeaders', JSON.stringify({
-      Authorization: 'Basic ' + btoa(username + ':' + password),
+      'Authorization': 'Basic ' + btoa(username + ':' + password)
     }));
   }
 
