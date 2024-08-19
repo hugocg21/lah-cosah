@@ -14,7 +14,7 @@ export interface Media {
   providedIn: 'root',
 })
 export class MediaService {
-  private baseUrl = 'http://localhost:8080/api/media';
+  private baseUrl = process.env['ANGULAR_APP_BACKEND_URL'];
 
   constructor(private http: HttpClient) {}
 
@@ -45,11 +45,8 @@ export class MediaService {
   }
 
   private buildMediaUrl(folder: string, filename: string): string {
-    // Construir el camino completo del archivo
     const filePath = folder ? `${folder}/${filename}` : filename;
-    return `http://localhost:8080/api/media/serve?filename=${encodeURIComponent(
-      filePath
-    )}`;
+    return `${this.baseUrl}/serve?filename=${encodeURIComponent(filePath)}`;
   }
 
   uploadMedia(files: File[], folder: string | null): Observable<Media[]> {
@@ -87,7 +84,6 @@ export class MediaService {
     const folderToMove = folder || ''; // Convert null or undefined to an empty string
     return this.http.put<void>(`${this.baseUrl}/${mediaId}/move`, { folder: folderToMove }, { headers: this.getAuthHeaders() });
   }
-
 
   private getAuthHeaders(): HttpHeaders {
     const storedHeaders = localStorage.getItem('authHeaders');

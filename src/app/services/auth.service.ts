@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8080/api/media'; // Cambia a tu URL base si es diferente
+  private baseUrl = process.env['ANGULAR_APP_BACKEND_URL'];
 
   constructor(private http: HttpClient) {}
 
