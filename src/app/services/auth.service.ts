@@ -35,6 +35,7 @@ export class AuthService {
 
   getAuthHeaders(): HttpHeaders {
     const storedHeaders = sessionStorage.getItem('authHeaders');
+    console.log('Encabezados de autenticación:', storedHeaders);
     return storedHeaders ? new HttpHeaders(JSON.parse(storedHeaders)) : new HttpHeaders();
   }
 }

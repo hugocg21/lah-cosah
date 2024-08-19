@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../environments/environment.prod';
+import { AuthService } from './auth.service';
 
 export interface Media {
   id: number;
@@ -17,7 +18,7 @@ export interface Media {
 export class MediaService {
   private baseUrl = environment.backendUrl + '/api/media';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   testLogin(headers: HttpHeaders): Observable<void> {
     return this.http.get<void>(`${this.baseUrl}`, { headers });
@@ -52,7 +53,7 @@ export class MediaService {
     if (folder) {
       formData.append('folder', folder);
     }
-    const headers = this.getAuthHeaders();
+    const headers = this.authService.getAuthHeaders();
     return this.http.post<Media[]>(`${this.baseUrl}/upload/multiple`, formData, { headers });
   }
 
@@ -78,8 +79,9 @@ export class MediaService {
     return this.http.put<void>(`${this.baseUrl}/${mediaId}/move`, { folder: folderToMove }, { headers: this.getAuthHeaders() });
   }
 
-  private getAuthHeaders(): HttpHeaders {
-    const storedHeaders = localStorage.getItem('authHeaders');
+  getAuthHeaders(): HttpHeaders {
+    const storedHeaders = sessionStorage.getItem('authHeaders');
+    console.log('Encabezados de autenticación:', storedHeaders);
     return storedHeaders ? new HttpHeaders(JSON.parse(storedHeaders)) : new HttpHeaders();
   }
 }
