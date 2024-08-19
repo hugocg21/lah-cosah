@@ -1,19 +1,20 @@
 <div class="min-h-screen flex flex-col bg-gray-100">
-  <!-- Header -->
   <header class="bg-blue-600 text-white shadow-md">
     <div class="container mx-auto px-4 py-6 flex justify-between items-center">
       <h1 class="text-3xl font-bold">Image Upload App</h1>
-      <!-- Navigation Menu -->
       <nav>
         <ul class="flex space-x-4">
-          <li><a routerLink="/upload" routerLinkActive="text-blue-300" class="hover:text-blue-300">Subir Imagen</a></li>
-          <li><a routerLink="/gallery" routerLinkActive="text-blue-300" class="hover:text-blue-300">Galería</a></li>
+          <li>
+            <a routerLink="/upload" routerLinkActive="text-blue-300" class="hover:text-blue-300">Subir Imagen</a>
+          </li>
+          <li>
+            <a routerLink="/gallery" routerLinkActive="text-blue-300" class="hover:text-blue-300">Galería</a>
+          </li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- Main Content -->
   <main class="flex-grow container mx-auto px-4 py-8">
     <router-outlet></router-outlet>
   </main>

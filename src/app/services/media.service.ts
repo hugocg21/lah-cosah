@@ -35,14 +35,10 @@ export class MediaService {
 
   getMediaByFolder(folder: string | null): Observable<Media[]> {
     const folderPath = folder || '';
-    return this.http.get<Media[]>(`${this.baseUrl}?folder=${folderPath}`).pipe(
-      map((media) =>
-        media.map((m) => ({
-          ...m,
-          url: this.buildMediaUrl(folderPath, m.name),
-        }))
-      )
-    );
+    return this.http.get<Media[]>(`${this.baseUrl}?folder=${folderPath}`).pipe(map((media) => media.map((m) => ({
+      ...m,
+      url: this.buildMediaUrl(folderPath, m.name),
+    }))));
   }
 
   private buildMediaUrl(folder: string, filename: string): string {
@@ -57,11 +53,7 @@ export class MediaService {
       formData.append('folder', folder);
     }
     const headers = this.getAuthHeaders();
-    return this.http.post<Media[]>(
-      `${this.baseUrl}/upload/multiple`,
-      formData,
-      { headers }
-    );
+    return this.http.post<Media[]>(`${this.baseUrl}/upload/multiple`, formData, { headers });
   }
 
   deleteMedia(id: number): Observable<void> {
@@ -72,7 +64,7 @@ export class MediaService {
   deleteMultipleMedia(ids: number[]): Observable<void> {
     const headers = this.getAuthHeaders();
     return this.http.post<void>(`${this.baseUrl}/delete-multiple`, ids, {
-      headers,
+      headers
     });
   }
 
@@ -82,14 +74,12 @@ export class MediaService {
   }
 
   moveMediaToFolder(mediaId: number, folder: string): Observable<void> {
-    const folderToMove = folder || ''; // Convert null or undefined to an empty string
+    const folderToMove = folder || '';
     return this.http.put<void>(`${this.baseUrl}/${mediaId}/move`, { folder: folderToMove }, { headers: this.getAuthHeaders() });
   }
 
   private getAuthHeaders(): HttpHeaders {
     const storedHeaders = localStorage.getItem('authHeaders');
-    return storedHeaders
-      ? new HttpHeaders(JSON.parse(storedHeaders))
-      : new HttpHeaders();
+    return storedHeaders ? new HttpHeaders(JSON.parse(storedHeaders)) : new HttpHeaders();
   }
 }

@@ -17,18 +17,16 @@ export class LoginComponent {
   login() {
     this.loading = true;
 
-    this.authService.login(this.username, this.password).subscribe(
-      () => {
-        this.authService.setAuthHeaders(this.username, this.password);
-        this.router.navigate(['/gallery']);
-        this.loading = false;
-      },
-      error => {
-        alert('Credenciales incorrectas');
-        console.error('Error de autenticación:', error);
-        this.loading = false;
-      }
-    );
+    this.authService.login(this.username, this.password).subscribe(() => {
+      this.authService.setAuthHeaders(this.username, this.password);
+      this.router.navigate(['/gallery']);
+      this.loading = false;
+    },
+    (error) => {
+      alert('Credenciales incorrectas');
+      console.error('Error de autenticación:', error);
+      this.loading = false;
+    });
   }
 
   togglePasswordVisibility() {

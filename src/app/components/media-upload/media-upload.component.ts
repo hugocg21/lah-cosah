@@ -18,14 +18,12 @@ export class MediaUploadComponent {
   }
 
   loadFolders(): void {
-    this.mediaService.getFolders().subscribe(
-      (folders: string[]) => {
-        this.folders = folders;
-      },
-      error => {
-        console.error('Error al obtener las carpetas:', error);
-      }
-    );
+    this.mediaService.getFolders().subscribe((folders: string[]) => {
+      this.folders = folders;
+    },
+    (error) => {
+      console.error('Error al obtener las carpetas:', error);
+    });
   }
 
   onFileSelected(event: any): void {
@@ -34,16 +32,14 @@ export class MediaUploadComponent {
 
   uploadFiles(): void {
     if (this.selectedFiles.length > 0) {
-      this.mediaService.uploadMedia(this.selectedFiles, this.selectedFolder).subscribe(
-        () => {
-          alert('Archivos subidos con éxito');
-          this.router.navigate(['/gallery']);
-        },
-        error => {
-          console.error('Error al subir los archivos:', error);
-          alert('Error al subir los archivos');
-        }
-      );
+      this.mediaService.uploadMedia(this.selectedFiles, this.selectedFolder).subscribe(() => {
+        alert('Archivos subidos con éxito');
+        this.router.navigate(['/gallery']);
+      },
+      (error) => {
+        console.error('Error al subir los archivos:', error);
+        alert('Error al subir los archivos');
+      });
     } else {
       alert('Por favor selecciona un archivo primero');
     }

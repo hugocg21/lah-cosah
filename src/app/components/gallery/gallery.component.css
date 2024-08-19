@@ -3,6 +3,6 @@
   max-height: 100%;
   width: auto;
   height: auto;
-  object-fit: contain; /* Mantiene la proporción original del video */
-  border-radius: 0.5rem; /* Opcional: Añade un borde redondeado */
+  object-fit: contain;
+  border-radius: 0.5rem;
 }

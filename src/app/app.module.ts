@@ -19,7 +19,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     LoginComponent,
     MediaUploadComponent,
     GalleryComponent,
-    MediaModalComponent
+    MediaModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -27,9 +27,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     FormsModule,
     HttpClientModule,
     FontAwesomeModule,
-    DragDropModule
+    DragDropModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

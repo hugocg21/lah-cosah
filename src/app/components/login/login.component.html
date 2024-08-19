@@ -4,19 +4,19 @@
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Usuario</label>
         <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" [(ngModel)]="username"
-          name="username" required>
+          name="username" required/>
       </div>
       <div class="mb-4 relative">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Contraseña</label>
-        <input [type]="showPassword ? 'text' : 'password'" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" [(ngModel)]="password"
-          name="password" required>
+        <input [type]="showPassword ? 'text' : 'password'" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="password" [(ngModel)]="password" name="password" required/>
         <button type="button" (click)="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3 text-gray-600 focus:outline-none">
           <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
         </button>
       </div>
       <div class="flex items-center justify-between">
         <button [disabled]="loading" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-          {{ loading ? 'Cargando...' : 'Entrar' }}
+          {{ loading ? "Cargando..." : "Entrar" }}
         </button>
       </div>
     </form>

@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MediaService } from '../../services/media.service';
-import {
-  faTrash,
-  faFolder,
-  faVideo,
-  faImage,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faFolder, faVideo, faImage } from '@fortawesome/free-solid-svg-icons';
 
 export interface Media {
   id: number;
@@ -42,39 +37,33 @@ export class GalleryComponent implements OnInit {
   }
 
   loadFolders(): void {
-    this.mediaService.getFolders().subscribe(
-      (folders: string[]) => {
-        this.folders = folders;
-      },
-      (error) => {
-        console.error('Error al obtener las carpetas:', error);
-      }
-    );
+    this.mediaService.getFolders().subscribe((folders: string[]) => {
+      this.folders = folders;
+    },
+    (error) => {
+      console.error('Error al obtener las carpetas:', error);
+    });
   }
 
   loadMedia(): void {
-    const folder = this.currentFolder || ''; // Use an empty string for the root
-    this.mediaService.getMediaByFolder(folder).subscribe(
-      (media: Media[]) => {
-        this.mediaList = media;
-      },
-      (error) => {
-        console.error('Error al obtener los medios:', error);
-      }
-    );
+    const folder = this.currentFolder || '';
+    this.mediaService.getMediaByFolder(folder).subscribe((media: Media[]) => {
+      this.mediaList = media;
+    },
+    (error) => {
+      console.error('Error al obtener los medios:', error);
+    });
   }
 
   createFolder(): void {
     if (this.newFolderName.trim()) {
-      this.mediaService.createFolder(this.newFolderName).subscribe(
-        () => {
-          this.loadFolders();
-          this.newFolderName = '';
-        },
-        (error) => {
-          console.error('Error al crear la carpeta:', error);
-        }
-      );
+      this.mediaService.createFolder(this.newFolderName).subscribe(() => {
+        this.loadFolders();
+        this.newFolderName = '';
+      },
+      (error) => {
+        console.error('Error al crear la carpeta:', error);
+      });
     } else {
       alert('Por favor ingresa un nombre para la carpeta.');
     }
@@ -122,39 +111,26 @@ export class GalleryComponent implements OnInit {
   }
 
   deleteFolder(folder: string): void {
-    if (
-      confirm(
-        `¿Estás seguro de que deseas eliminar la carpeta "${folder}" y todo su contenido?`
-      )
-    ) {
+    if (confirm(`¿Estás seguro de que deseas eliminar la carpeta "${folder}" y todo su contenido?`)) {
       this.mediaService.deleteFolder(folder).subscribe(() => {
         this.folders = this.folders.filter((f) => f !== folder);
-        this.loadMedia(); // Recargar medios por si estaban en la carpeta eliminada
+        this.loadMedia();
       });
     }
   }
 
   deleteSelectedMedia(): void {
-    const idsToDelete = this.mediaList
-      .filter((media) => media.selected)
-      .map((media) => media.id);
-    if (
-      idsToDelete.length > 0 &&
-      confirm('¿Estás seguro de que deseas eliminar los medios seleccionados?')
-    ) {
+    const idsToDelete = this.mediaList.filter((media) => media.selected).map((media) => media.id);
+    if (idsToDelete.length > 0 && confirm('¿Estás seguro de que deseas eliminar los medios seleccionados?')) {
       this.mediaService.deleteMultipleMedia(idsToDelete).subscribe(() => {
-        this.mediaList = this.mediaList.filter(
-          (media) => !idsToDelete.includes(media.id)
-        );
+        this.mediaList = this.mediaList.filter((media) => !idsToDelete.includes(media.id));
         this.toggleMultiSelect();
       });
     }
   }
 
   isVideo(url: string): boolean {
-    return (
-      url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg')
-    );
+    return (url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg'));
   }
 
   allowDrop(event: DragEvent): void {
@@ -186,33 +162,25 @@ export class GalleryComponent implements OnInit {
   }
 
   moveMediaToFolder(media: Media, folder: string | null): void {
-    const folderToMove = folder || ''; // Convert null to an empty string
-    this.mediaService.moveMediaToFolder(media.id, folderToMove).subscribe(
-      () => {
-        if (this.currentFolder === null) {
-          // If we are in the root, reload the media list
-          this.loadMedia();
-        } else {
-          // If we moved the file to the root, manually add it to the root media list
-          if (folder === null) {
-            this.mediaService.getMediaByFolder(null).subscribe(
-              (rootMedia: Media[]) => {
-                this.mediaList = rootMedia;
-              },
-              (error) => {
-                console.error('Error al obtener los medios de la raíz:', error);
-              }
-            );
-          }
-
-          // Reload the current folder's media list
-          this.loadMedia();
+    const folderToMove = folder || '';
+    this.mediaService.moveMediaToFolder(media.id, folderToMove).subscribe(() => {
+      if (this.currentFolder === null) {
+        this.loadMedia();
+      } else {
+        if (folder === null) {
+          this.mediaService.getMediaByFolder(null).subscribe((rootMedia: Media[]) => {
+              this.mediaList = rootMedia;
+            },
+            (error) => {
+              console.error('Error al obtener los medios de la raíz:', error);
+            });
         }
-        this.loadFolders(); // Refresh folders as well
-      },
-      (error) => {
-        console.error('Error al mover el archivo:', error);
+        this.loadMedia();
       }
-    );
+      this.loadFolders();
+    },
+    (error) => {
+      console.error('Error al mover el archivo:', error);
+    });
   }
 }

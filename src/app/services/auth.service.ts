@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment.prod';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private baseUrl = environment.backendUrl + '/api/media';
@@ -13,7 +13,7 @@ export class AuthService {
 
   login(username: string, password: string): Observable<void> {
     const headers = new HttpHeaders({
-      'Authorization': 'Basic ' + btoa(username + ':' + password)
+      Authorization: 'Basic ' + btoa(username + ':' + password),
     });
 
     return this.http.get<void>(`${this.baseUrl}`, { headers });
@@ -29,7 +29,7 @@ export class AuthService {
 
   setAuthHeaders(username: string, password: string): void {
     sessionStorage.setItem('authHeaders', JSON.stringify({
-      'Authorization': 'Basic ' + btoa(username + ':' + password)
+      Authorization: 'Basic ' + btoa(username + ':' + password),
     }));
   }
 
