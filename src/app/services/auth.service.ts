@@ -1,18 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-declare var process: {
-  env: {
-    ANGULAR_APP_BACKEND_URL: string;
-  }
-};
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = process.env['ANGULAR_APP_BACKEND_URL'];
+  private baseUrl = environment.backendUrl;
 
   constructor(private http: HttpClient) {}
 

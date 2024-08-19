@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 
 export interface Media {
   id: number;
@@ -10,17 +11,11 @@ export interface Media {
   selected?: boolean;
 }
 
-declare var process: {
-  env: {
-    ANGULAR_APP_BACKEND_URL: string;
-  }
-};
-
 @Injectable({
   providedIn: 'root',
 })
 export class MediaService {
-  private baseUrl = process.env['ANGULAR_APP_BACKEND_URL'];
+  private baseUrl = environment.backendUrl;
 
   constructor(private http: HttpClient) {}
 
