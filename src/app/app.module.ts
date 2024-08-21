@@ -30,13 +30,13 @@ import { RouterModule } from '@angular/router';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    RouterModule, // Include RouterModule
+    RouterModule,
     HttpClientModule,
     FontAwesomeModule,
     DragDropModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
-    AngularFireStorageModule, // For Firebase storage
-    AngularFireAuthModule, // For Firebase authentication
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireStorageModule,
+    AngularFireAuthModule
   ],
   bootstrap: [AppComponent],
 })
