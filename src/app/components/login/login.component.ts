@@ -18,7 +18,6 @@ export class LoginComponent {
     this.loading = true;
 
     this.authService.login(this.username, this.password).subscribe(() => {
-      this.authService.setAuthHeaders(this.username, this.password);
       this.router.navigate(['/gallery']);
       this.loading = false;
     },

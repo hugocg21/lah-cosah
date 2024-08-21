@@ -1,41 +1,52 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../environments/environment.prod';
+import { HttpHeaders } from '@angular/common/http';
+import { from, map, Observable } from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = environment.backendUrl + '/api/media';
+  private readonly email = 'user@example.com';
 
-  constructor(private http: HttpClient) {}
+  constructor(private afAuth: AngularFireAuth) {}
 
+  // Método para iniciar sesión, permitiendo que el usuario ingrese solo "user"
   login(username: string, password: string): Observable<void> {
-    const headers = new HttpHeaders({
-      Authorization: 'Basic ' + btoa(username + ':' + password),
-    });
+    const email = username === 'user' ? this.email : username;
 
-    return this.http.get<void>(`${this.baseUrl}`, { headers });
+    return from(this.afAuth.signInWithEmailAndPassword(email, password)).pipe(
+      map(() => {
+        // Guardar token de autenticación en sessionStorage
+        this.afAuth.idToken.subscribe((token: string | null) => {
+          if (token) {
+            sessionStorage.setItem('authToken', token);
+          }
+        });
+      })
+    );
   }
 
+  // Método para cerrar sesión
+  logout(): Observable<void> {
+    return from(this.afAuth.signOut()).pipe(
+      map(() => {
+        sessionStorage.removeItem('authToken');
+      })
+    );
+  }
+
+  // Método para verificar si el usuario está autenticado
   isAuthenticated(): boolean {
-    return !!sessionStorage.getItem('authHeaders');
+    return !!sessionStorage.getItem('authToken');
   }
 
-  logout(): void {
-    sessionStorage.removeItem('authHeaders');
-  }
-
-  setAuthHeaders(username: string, password: string): void {
-    sessionStorage.setItem('authHeaders', JSON.stringify({
-      'Authorization': 'Basic ' + btoa(username + ':' + password)
-    }));
-  }
-
+  // Método para obtener los encabezados de autenticación
   getAuthHeaders(): HttpHeaders {
-    const storedHeaders = sessionStorage.getItem('authHeaders');
-    console.log('Encabezados de autenticación:', storedHeaders);
-    return storedHeaders ? new HttpHeaders(JSON.parse(storedHeaders)) : new HttpHeaders();
+    const token = sessionStorage.getItem('authToken');
+    if (token) {
+      return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    }
+    return new HttpHeaders();
   }
 }
