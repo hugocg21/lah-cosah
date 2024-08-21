@@ -37,8 +37,8 @@ export class MediaUploadComponent {
         this.router.navigate(['/gallery']);
       },
       (error) => {
-        console.error('Error al subir los archivos:', error);
-        alert('Error al subir los archivos');
+        // console.error('Error al subir los archivos:', error);
+        // alert('Error al subir los archivos');
       });
     } else {
       alert('Por favor selecciona un archivo primero');
