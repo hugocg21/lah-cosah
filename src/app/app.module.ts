@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth'; // Add this for authentication
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
 import { LoginComponent } from './components/login/login.component';
 import { MediaUploadComponent } from './components/media-upload/media-upload.component';
@@ -16,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { environment } from './environments/environments';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { environment } from './environments/environments';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    RouterModule, // Include RouterModule
     HttpClientModule,
     FontAwesomeModule,
     DragDropModule,
