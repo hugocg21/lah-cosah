@@ -42,16 +42,6 @@ export class AuthService {
   }
 
   // Método para obtener los encabezados de autenticación
-  logout(): void {
-    sessionStorage.removeItem('authHeaders');
-  }
-
-  setAuthHeaders(username: string, password: string): void {
-    sessionStorage.setItem('authHeaders', JSON.stringify({
-      'Authorization': 'Basic ' + btoa(username + ':' + password)
-    }));
-  }
-
   getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('authToken');
     if (token) {
