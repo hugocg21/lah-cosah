@@ -18,6 +18,10 @@ export class GalleryComponent implements OnInit {
 
   isModalOpen: boolean = false;
 
+  folderCount: number = 0; // Contador de carpetas
+  fileCount: number = 0;   // Contador de archivos
+  totalFileCount: number = 0
+
   faTrash = faTrash;
   faFolder = faFolder;
   faVideo = faVideo;
@@ -31,8 +35,17 @@ export class GalleryComponent implements OnInit {
   }
 
   loadFolders(): void {
-    this.mediaService.getFolders().subscribe((folders: string[]) => {
+    this.mediaService.getFolders().subscribe(
+      ({ folders, fileCount }) => {
         this.folders = folders.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+        if (!this.currentFolder) {
+          // Cargar imágenes de todas las carpetas si estás en la raíz
+          this.loadMediaFromAllFolders();
+          console.log(`Total de archivos en todas las carpetas: ${fileCount}`);
+        } else {
+          console.log(`Total de archivos en la carpeta actual: ${fileCount}`);
+        }
       },
       (error) => {
         console.error('Error al obtener las carpetas:', error);
@@ -43,14 +56,34 @@ export class GalleryComponent implements OnInit {
   loadMedia(): void {
     const folder = this.currentFolder || '';
     this.mediaService.getMediaByFolder(folder).subscribe(
-      (media: Media[]) => {
-        this.mediaList = media;
+      (result) => {
+        this.mediaList = result.media;
+        this.fileCount = result.fileCount; // Actualizar contador de archivos
       },
       (error) => {
         console.error('Error al obtener los medios:', error);
       }
     );
   }
+
+  loadMediaFromAllFolders(): void {
+    this.mediaList = []; // Limpiar la lista de medios
+    let totalFileCount = 0;
+
+    this.folders.forEach(folder => {
+      this.mediaService.getMediaByFolder(folder).subscribe(
+        ({ media, fileCount }) => {
+          this.mediaList = [...this.mediaList, ...media];
+          totalFileCount += fileCount;
+          console.log(`Total de archivos hasta ahora: ${totalFileCount}`);
+        },
+        (error) => {
+          console.error('Error al obtener los medios de la carpeta:', error);
+        }
+      );
+    });
+  }
+
 
   createFolder(): void {
     if (this.newFolderName.trim()) {
@@ -71,17 +104,13 @@ export class GalleryComponent implements OnInit {
   openFolder(folder: string) {
     this.currentFolder = folder;
     this.mediaList = []; // Limpiar la lista de medios antes de cargar nuevos
-    this.mediaService.getMediaByFolder(folder).subscribe((media) => {
-      this.mediaList = media;
-    });
+    this.loadMedia(); // Cargar medios en la carpeta
   }
 
   goBack() {
     this.currentFolder = null;
     this.mediaList = []; // Limpiar la lista de medios antes de cargar los medios de la raíz
-    this.mediaService.getMediaByFolder(null).subscribe((media) => {
-      this.mediaList = media;
-    });
+    this.loadMedia(); // Cargar medios en la raíz
   }
 
   toggleMultiSelect(): void {
@@ -110,6 +139,7 @@ export class GalleryComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas eliminar este archivo?')) {
       this.mediaService.deleteMedia(media).subscribe(() => {
         this.mediaList = this.mediaList.filter((m) => m.url !== media.url);
+        this.fileCount--; // Reducir el contador de archivos
         this.closeModal();
       });
     }
@@ -119,6 +149,7 @@ export class GalleryComponent implements OnInit {
     if (confirm(`¿Estás seguro de que deseas eliminar la carpeta "${folder}" y todo su contenido?`)) {
       this.mediaService.deleteFolder(folder).subscribe(() => {
         this.folders = this.folders.filter((f) => f !== folder);
+        this.folderCount--; // Reducir el contador de carpetas
         this.loadMedia();
       });
     }
@@ -130,6 +161,7 @@ export class GalleryComponent implements OnInit {
       const deleteOps = mediaToDelete.map((media) => this.mediaService.deleteMedia(media));
       forkJoin(deleteOps).subscribe(() => {
         this.mediaList = this.mediaList.filter((media) => !media.selected);
+        this.fileCount -= mediaToDelete.length; // Reducir el contador de archivos
         this.toggleMultiSelect();
       });
     }
@@ -162,8 +194,6 @@ export class GalleryComponent implements OnInit {
     if (mediaData) {
       const media: Media = JSON.parse(mediaData);
       this.moveMediaToFolder(media, null);
-      this.loadMedia();
-      this.loadFolders();
     }
   }
 

@@ -20,42 +20,75 @@ export class MediaService {
   constructor(private storage: AngularFireStorage) {}
 
   // Obtener lista de carpetas
-  getFolders(): Observable<string[]> {
+  getFolders(): Observable<{ folders: string[]; fileCount: number }> {
     return this.storage
       .ref(this.basePath)
       .listAll()
       .pipe(
-        map((result) =>
-          result.prefixes.map((prefix) => prefix.fullPath.split('/').pop()!)
-        )
+        map((result) => {
+          // Extraer los nombres de las carpetas
+          const folders = result.prefixes.map(
+            (prefix) => prefix.fullPath.split('/').pop()!
+          );
+
+          // Contar los archivos filtrando el archivo .keep
+          const fileCount = result.items.filter(
+            (item) => item.name !== '.keep'
+          ).length;
+
+          return { folders, fileCount };
+        })
       );
   }
 
-  getMediaByFolder(folder: string | null): Observable<Media[]> {
+  getMediaByFolder(
+    folder: string | null
+  ): Observable<{ media: Media[]; fileCount: number; totalFileCount: number }> {
     const folderPath = folder ? `${this.basePath}/${folder}` : this.basePath;
-    return this.storage.ref(folderPath).listAll().pipe(
-      mergeMap((result) => {
-        // Filtrar el archivo .keep
-        const mediaObservables = result.items
-          .filter((item) => item.name !== '.keep') // Filtrar el archivo .keep
-          .map((item) =>
-            from(item.getDownloadURL()).pipe(
-              map(
-                (url) =>
-                  ({
-                    id: -1, // No hay id en Firebase Storage, este es un placeholder
-                    name: item.name,
-                    url: url,
-                    selected: false,
-                  } as Media)
-              )
-            )
-          );
-        return forkJoin(mediaObservables);
-      })
-    );
-  }
 
+    // Obtener todos los archivos en la raíz para calcular el total
+    return this.storage
+      .ref(this.basePath)
+      .listAll()
+      .pipe(
+        mergeMap((rootResult) => {
+          const rootFileCount = rootResult.items.filter(
+            (item) => item.name !== '.keep'
+          ).length;
+
+          return this.storage
+            .ref(folderPath)
+            .listAll()
+            .pipe(
+              mergeMap((result) => {
+                const mediaObservables = result.items
+                  .filter((item) => item.name !== '.keep')
+                  .map((item) =>
+                    from(item.getDownloadURL()).pipe(
+                      map(
+                        (url) =>
+                          ({
+                            id: -1,
+                            name: item.name,
+                            url: url,
+                            selected: false,
+                          } as Media)
+                      )
+                    )
+                  );
+
+                return forkJoin(mediaObservables).pipe(
+                  map((media) => ({
+                    media,
+                    fileCount: media.length,
+                    totalFileCount: rootFileCount, // Usar el conteo de archivos en la raíz como total
+                  }))
+                );
+              })
+            );
+        })
+      );
+  }
 
   // Crear una nueva carpeta (esto en realidad no es necesario en Firebase ya que las carpetas se crean implícitamente al agregar archivos)
   createFolder(folderName: string): Observable<void> {

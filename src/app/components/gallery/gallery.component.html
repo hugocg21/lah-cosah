@@ -1,16 +1,23 @@
 <div class="p-4 md:p-8">
   <div class="flex flex-col md:flex-row justify-between items-center mb-4">
     <h2 class="text-xl md:text-2xl font-bold">Galería</h2>
-    <div *ngIf="mediaList.length > 0 || folders.length > 0" class="mt-4 md:mt-0">
-      <button (click)="toggleMultiSelect()" class="bg-gray-500 text-white px-4 py-2 rounded">
-        {{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}
-      </button>
-      <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
-        Seleccionar todas
-      </button>
-      <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
-        Eliminar seleccionados
-      </button>
+    <div class="flex flex-col md:flex-row items-center mt-4 md:mt-0">
+      <div class="mr-4 text-gray-700">
+        <p>Total de carpetas: {{ folders.length }}</p>
+        <p>Total de archivos en la aplicación: {{ mediaList.length }}</p>
+        <p *ngIf="currentFolder">Archivos en la carpeta actual: {{ fileCount }}</p>
+      </div>
+      <div *ngIf="mediaList.length > 0 || folders.length > 0" class="mt-4 md:mt-0 flex flex-col md:flex-row items-center">
+        <button (click)="toggleMultiSelect()" class="bg-gray-500 text-white px-4 py-2 rounded mb-2 md:mb-0">
+          {{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}
+        </button>
+        <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
+          Seleccionar todas
+        </button>
+        <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
+          Eliminar seleccionados
+        </button>
+      </div>
     </div>
   </div>
 

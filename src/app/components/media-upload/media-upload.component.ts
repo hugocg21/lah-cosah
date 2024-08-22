@@ -18,12 +18,15 @@ export class MediaUploadComponent {
   }
 
   loadFolders(): void {
-    this.mediaService.getFolders().subscribe((folders: string[]) => {
-      this.folders = folders;
-    },
-    (error) => {
-      console.error('Error al obtener las carpetas:', error);
-    });
+    this.mediaService.getFolders().subscribe(
+      ({ folders, fileCount }) => {  // Ajustar para recibir el objeto con carpetas y conteo de archivos
+        this.folders = folders.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        console.log(`Total de archivos: ${fileCount}`); // Puedes manejar el conteo de archivos como necesites
+      },
+      (error) => {
+        console.error('Error al obtener las carpetas:', error);
+      }
+    );
   }
 
   onFileSelected(event: any): void {
