@@ -136,7 +136,7 @@ export class GalleryComponent implements OnInit {
   }
 
   isVideo(url: string): boolean {
-    return url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
+    return url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('.m4v');
   }
 
   allowDrop(event: DragEvent): void {
