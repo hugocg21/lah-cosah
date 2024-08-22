@@ -36,7 +36,7 @@ import { RouterModule } from '@angular/router';
     DragDropModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireStorageModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
   ],
   bootstrap: [AppComponent],
 })

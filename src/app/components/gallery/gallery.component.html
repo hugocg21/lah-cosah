@@ -1,6 +1,17 @@
 <div class="p-4 md:p-8">
   <div class="flex flex-col md:flex-row justify-between items-center mb-4">
     <h2 class="text-xl md:text-2xl font-bold">Galería</h2>
+    
+    <div *ngIf="!currentFolder">
+      <p>Total de carpetas: {{ folders.length }}</p>
+    </div>
+    <div>
+      <p>Total de archivos en la aplicación: {{ totalMediaCount }}</p>
+    </div>
+    <div *ngIf="currentFolder">
+      <p>Archivos en esta carpeta: {{ currentFolderMediaCount }}</p>
+    </div>
+
     <div *ngIf="mediaList.length > 0 || folders.length > 0" class="mt-4 md:mt-0">
       <button (click)="toggleMultiSelect()" class="bg-gray-500 text-white px-4 py-2 rounded">
         {{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}

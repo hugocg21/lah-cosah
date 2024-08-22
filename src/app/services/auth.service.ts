@@ -11,41 +11,32 @@ export class AuthService {
 
   constructor(private afAuth: AngularFireAuth) {}
 
-  // Método para iniciar sesión, permitiendo que el usuario ingrese solo "user"
   login(username: string, password: string): Observable<void> {
     const email = username === 'user' ? this.email : username;
 
-    return from(this.afAuth.signInWithEmailAndPassword(email, password)).pipe(
-      map(() => {
-        // Guardar token de autenticación en sessionStorage
-        this.afAuth.idToken.subscribe((token: string | null) => {
-          if (token) {
-            sessionStorage.setItem('authToken', token);
-          }
-        });
-      })
-    );
+    return from(this.afAuth.signInWithEmailAndPassword(email, password)).pipe(map(() => {
+      this.afAuth.idToken.subscribe((token: string | null) => {
+        if (token) {
+          sessionStorage.setItem('authToken', token);
+        }
+      });
+    }));
   }
 
-  // Método para cerrar sesión
   logout(): Observable<void> {
-    return from(this.afAuth.signOut()).pipe(
-      map(() => {
-        sessionStorage.removeItem('authToken');
-      })
-    );
+    return from(this.afAuth.signOut()).pipe(map(() => {
+      sessionStorage.removeItem('authToken');
+    }));
   }
 
-  // Método para verificar si el usuario está autenticado
   isAuthenticated(): boolean {
     return !!sessionStorage.getItem('authToken');
   }
 
-  // Método para obtener los encabezados de autenticación
   getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('authToken');
     if (token) {
-      return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+      return new HttpHeaders({ Authorization: `Bearer ${token}` });
     }
     return new HttpHeaders();
   }

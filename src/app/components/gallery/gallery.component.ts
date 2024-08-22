@@ -23,65 +23,71 @@ export class GalleryComponent implements OnInit {
   faVideo = faVideo;
   faImage = faImage;
 
+  totalMediaCount: number = 0;
+  currentFolderMediaCount: number = 0;
+
   constructor(private mediaService: MediaService) {}
 
   ngOnInit(): void {
     this.loadFolders();
     this.loadMedia();
+    this.calculateTotalMediaCount();
   }
 
   loadFolders(): void {
     this.mediaService.getFolders().subscribe((folders: string[]) => {
-        this.folders = folders.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-      },
-      (error) => {
-        console.error('Error al obtener las carpetas:', error);
-      }
-    );
+      this.folders = folders.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    },
+    (error) => {
+      console.error('Error al obtener las carpetas:', error);
+    });
   }
 
   loadMedia(): void {
     const folder = this.currentFolder || '';
-    this.mediaService.getMediaByFolder(folder).subscribe(
-      (media: Media[]) => {
-        this.mediaList = media;
-      },
-      (error) => {
-        console.error('Error al obtener los medios:', error);
-      }
-    );
+    this.mediaService.getMediaByFolder(folder).subscribe((media: Media[]) => {
+      this.mediaList = media;
+      this.currentFolderMediaCount = media.length;
+    },
+    (error) => {
+      console.error('Error al obtener los medios:', error);
+    });
+  }
+
+  calculateTotalMediaCount(): void {
+    this.mediaService.getTotalMediaCount().subscribe((totalCount) => {
+      this.totalMediaCount = totalCount;
+    },
+    (error) => {
+      console.error('Error al calcular el total de archivos:', error);
+    });
   }
 
   createFolder(): void {
     if (this.newFolderName.trim()) {
-      this.mediaService.createFolder(this.newFolderName).subscribe(
-        () => {
-          this.loadFolders();
-          this.newFolderName = '';
-        },
-        (error) => {
-          console.error('Error al crear la carpeta:', error);
-        }
-      );
+      this.mediaService.createFolder(this.newFolderName).subscribe(() => {
+        this.loadFolders();
+        this.newFolderName = '';
+        this.calculateTotalMediaCount();
+      },
+      (error) => {
+        console.error('Error al crear la carpeta:', error);
+      });
     } else {
       alert('Por favor ingresa un nombre para la carpeta.');
     }
   }
 
-  openFolder(folder: string) {
+  openFolder(folder: string): void {
     this.currentFolder = folder;
-    this.mediaList = []; // Limpiar la lista de medios antes de cargar nuevos
-    this.mediaService.getMediaByFolder(folder).subscribe((media) => {
-      this.mediaList = media;
-    });
+    this.mediaList = [];
+    this.loadMedia();
   }
 
-  goBack() {
+  goBack(): void {
     this.currentFolder = null;
-    this.mediaList = []; // Limpiar la lista de medios antes de cargar los medios de la raíz
-    this.mediaService.getMediaByFolder(null).subscribe((media) => {
-      this.mediaList = media;
-    });
+    this.mediaList = [];
+    this.loadMedia();
   }
 
   toggleMultiSelect(): void {
@@ -111,6 +117,7 @@ export class GalleryComponent implements OnInit {
       this.mediaService.deleteMedia(media).subscribe(() => {
         this.mediaList = this.mediaList.filter((m) => m.url !== media.url);
         this.closeModal();
+        this.calculateTotalMediaCount();
       });
     }
   }
@@ -120,6 +127,7 @@ export class GalleryComponent implements OnInit {
       this.mediaService.deleteFolder(folder).subscribe(() => {
         this.folders = this.folders.filter((f) => f !== folder);
         this.loadMedia();
+        this.calculateTotalMediaCount();
       });
     }
   }
@@ -131,12 +139,13 @@ export class GalleryComponent implements OnInit {
       forkJoin(deleteOps).subscribe(() => {
         this.mediaList = this.mediaList.filter((media) => !media.selected);
         this.toggleMultiSelect();
+        this.calculateTotalMediaCount();
       });
     }
   }
 
   isVideo(url: string): boolean {
-    return url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('.m4v');
+    return (url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('.m4v'));
   }
 
   allowDrop(event: DragEvent): void {
@@ -171,6 +180,7 @@ export class GalleryComponent implements OnInit {
     this.mediaService.moveMediaToFolder(media, folder).subscribe(() => {
       this.loadMedia();
       this.loadFolders();
+      this.calculateTotalMediaCount();
     },
     (error) => {
       console.error('Error al mover el archivo:', error);
