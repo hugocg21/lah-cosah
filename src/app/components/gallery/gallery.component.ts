@@ -68,14 +68,20 @@ export class GalleryComponent implements OnInit {
     }
   }
 
-  openFolder(folder: string): void {
+  openFolder(folder: string) {
     this.currentFolder = folder;
-    this.loadMedia();
+    this.mediaList = []; // Limpiar la lista de medios antes de cargar nuevos
+    this.mediaService.getMediaByFolder(folder).subscribe((media) => {
+      this.mediaList = media;
+    });
   }
 
-  goBack(): void {
+  goBack() {
     this.currentFolder = null;
-    this.loadMedia();
+    this.mediaList = []; // Limpiar la lista de medios antes de cargar los medios de la raíz
+    this.mediaService.getMediaByFolder(null).subscribe((media) => {
+      this.mediaList = media;
+    });
   }
 
   toggleMultiSelect(): void {
