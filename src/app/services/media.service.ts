@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { catchError, finalize, map, mergeMap } from 'rxjs/operators';
+import { catchError, delay, finalize, map, mergeMap } from 'rxjs/operators';
 import { Observable, forkJoin, from, throwError } from 'rxjs';
 import { environment } from '../environments/environments';
 
@@ -72,36 +72,10 @@ export class MediaService {
       const fileRef = this.storage.ref(filePath);
       const task = this.storage.upload(filePath, file);
 
-      const retryCount = 3;
-      let attempts = 0;
-
-      const getUrlWithRetry = (): Observable<string> => {
-        return fileRef.getDownloadURL().pipe(
-          catchError((error) => {
-            if (
-              attempts < retryCount &&
-              error.code === 'storage/object-not-found'
-            ) {
-              attempts++;
-              return getUrlWithRetry();
-            }
-            return throwError(error);
-          })
-        );
-      };
-
       return task.snapshotChanges().pipe(
-        finalize(() => {
-          getUrlWithRetry().subscribe(
-            (url) => {
-              console.log('File URL:', url);
-            },
-            (error) => {
-              console.error('Failed to retrieve file URL:', error);
-            }
-          );
-        }),
-        mergeMap(() => getUrlWithRetry()),
+        finalize(() => fileRef.getDownloadURL()), // Ensure upload is complete
+        delay(5000), // Wait for 5 seconds before fetching the download URL
+        mergeMap(() => fileRef.getDownloadURL()), // Fetch the download URL
         map((url) => ({ id: -1, name: file.name, url }))
       );
     });
