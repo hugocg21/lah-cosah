@@ -31,9 +31,8 @@ export class GalleryComponent implements OnInit {
   }
 
   loadFolders(): void {
-    this.mediaService.getFolders().subscribe(
-      (folders: string[]) => {
-        this.folders = folders;
+    this.mediaService.getFolders().subscribe((folders: string[]) => {
+        this.folders = folders.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
       },
       (error) => {
         console.error('Error al obtener las carpetas:', error);
