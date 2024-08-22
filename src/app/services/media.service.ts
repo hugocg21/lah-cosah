@@ -31,15 +31,14 @@ export class MediaService {
       );
   }
 
-  // Obtener medios en una carpeta específica
   getMediaByFolder(folder: string | null): Observable<Media[]> {
     const folderPath = folder ? `${this.basePath}/${folder}` : this.basePath;
-    return this.storage
-      .ref(folderPath)
-      .listAll()
-      .pipe(
-        mergeMap((result) => {
-          const mediaObservables = result.items.map((item) =>
+    return this.storage.ref(folderPath).listAll().pipe(
+      mergeMap((result) => {
+        // Filtrar el archivo .keep
+        const mediaObservables = result.items
+          .filter((item) => item.name !== '.keep') // Filtrar el archivo .keep
+          .map((item) =>
             from(item.getDownloadURL()).pipe(
               map(
                 (url) =>
@@ -52,10 +51,11 @@ export class MediaService {
               )
             )
           );
-          return forkJoin(mediaObservables);
-        })
-      );
+        return forkJoin(mediaObservables);
+      })
+    );
   }
+
 
   // Crear una nueva carpeta (esto en realidad no es necesario en Firebase ya que las carpetas se crean implícitamente al agregar archivos)
   createFolder(folderName: string): Observable<void> {
