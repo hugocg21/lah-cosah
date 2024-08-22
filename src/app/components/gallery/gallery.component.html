@@ -1,22 +1,22 @@
-<div class="p-8">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-bold">Galería</h2>
-    <div *ngIf="mediaList.length > 0 || folders.length > 0">
+<div class="p-4 md:p-8">
+  <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+    <h2 class="text-xl md:text-2xl font-bold">Galería</h2>
+    <div *ngIf="mediaList.length > 0 || folders.length > 0" class="mt-4 md:mt-0">
       <button (click)="toggleMultiSelect()" class="bg-gray-500 text-white px-4 py-2 rounded">
         {{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}
       </button>
-      <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">
+      <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
         Seleccionar todas
       </button>
-      <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 text-white px-4 py-2 rounded ml-2">
+      <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
         Eliminar seleccionados
       </button>
     </div>
   </div>
 
-  <div class="mb-4" *ngIf="!currentFolder">
-    <input [(ngModel)]="newFolderName" placeholder="Nombre de la carpeta" class="border p-2 rounded" />
-    <button (click)="createFolder()" class="bg-green-500 text-white px-4 py-2 rounded ml-2">Crear carpeta</button>
+  <div class="mb-4 flex flex-col md:flex-row" *ngIf="!currentFolder">
+    <input [(ngModel)]="newFolderName" placeholder="Nombre de la carpeta" class="border p-2 rounded mb-2 md:mb-0 md:mr-2" />
+    <button (click)="createFolder()" class="bg-green-500 text-white px-4 py-2 rounded">Crear carpeta</button>
   </div>
 
   <div *ngIf="currentFolder" class="mb-4">
@@ -25,11 +25,11 @@
     </div>
   </div>
 
-  <div *ngIf="!currentFolder" class="grid grid-cols-6 gap-4 mb-8">
+  <div *ngIf="!currentFolder" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
     <div *ngFor="let folder of folders" class="bg-white p-2 rounded shadow-md relative cursor-pointer flex items-center" (dragover)="allowDrop($event)" (drop)="onDrop($event, folder)">
       <div class="flex justify-between w-full">
         <div class="flex items-center" (click)="openFolder(folder)">
-          <fa-icon [icon]="faFolder" class="text-4xl text-gray-500 mr-2"></fa-icon>
+          <fa-icon [icon]="faFolder" class="text-2xl md:text-4xl text-gray-500 mr-2"></fa-icon>
           <p class="text-gray-700 font-medium">{{ folder }}</p>
         </div>
         <button (click)="deleteFolder(folder)" class="text-red-500">
@@ -41,10 +41,10 @@
 
   <div *ngIf="currentFolder" class="flex items-center mb-4">
     <button (click)="goBack()" class="text-blue-500">Atrás</button>
-    <h3 class="text-xl ml-2">{{ currentFolder }}</h3>
+    <h3 class="text-lg md:text-xl ml-2">{{ currentFolder }}</h3>
   </div>
 
-  <div *ngIf="mediaList.length > 0; else noMedia" class="grid grid-cols-6 gap-4">
+  <div *ngIf="mediaList.length > 0; else noMedia" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
     <div *ngFor="let media of mediaList" class="rounded shadow-md relative" draggable="true" (dragstart)="onDragStart($event, media)">
       <div class="absolute top-2 left-2">
         <fa-icon *ngIf="isVideo(media.url)" [icon]="faVideo" class="text-white bg-black bg-opacity-50 p-1 rounded"></fa-icon>
@@ -52,11 +52,11 @@
       </div>
 
       <ng-container *ngIf="isVideo(media.url); else imageTemplate">
-        <video [src]="media.url" class="w-full h-32 object-cover rounded" (click)="openModal(media)"></video>
+        <video [src]="media.url" class="w-full h-24 md:h-32 object-cover rounded" (click)="openModal(media)"></video>
       </ng-container>
 
       <ng-template #imageTemplate>
-        <img [src]="media.url" alt="Uploaded media" class="w-full h-32 object-cover rounded" (click)="openModal(media)" />
+        <img [src]="media.url" alt="Uploaded media" class="w-full h-24 md:h-32 object-cover rounded" (click)="openModal(media)" />
       </ng-template>
 
       <div *ngIf="multiSelectMode" class="absolute top-0 left-0">
@@ -73,11 +73,11 @@
   </ng-template>
 
   <div *ngIf="isModalOpen && selectedMedia && selectedMedia.url" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" (click)="closeModal()">
-    <div class="relative" (click)="$event.stopPropagation()">
+    <div class="relative max-w-full max-h-full overflow-auto" (click)="$event.stopPropagation()">
       <button (click)="closeModal()" class="absolute top-2 right-2 text-white text-2xl">&times;</button>
 
       <ng-container *ngIf="isVideo(selectedMedia.url); else imageModal">
-        <video [src]="selectedMedia.url" controls class="max-h-screen"></video>
+        <video [src]="selectedMedia.url" controls class="max-w-full max-h-screen"></video>
       </ng-container>
 
       <ng-template #imageModal>
