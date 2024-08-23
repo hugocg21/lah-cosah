@@ -1,19 +1,25 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Observable } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private afAuth: AngularFireAuth, private router: Router) {}
 
-  canActivate(): boolean {
-    if (this.authService.isAuthenticated()) {
-      return true;
-    } else {
-      this.router.navigate(['/login']);
-      return false;
-    }
+  canActivate(): Observable<boolean> {
+    return this.afAuth.authState.pipe(
+      take(1),
+      map(user => !!user), // Devuelve true si el usuario está autenticado
+      tap(loggedIn => {
+        if (!loggedIn) {
+          console.log('access denied');
+          this.router.navigate(['/login']); // Redirige a la página de login si no está autenticado
+        }
+      })
+    );
   }
 }
