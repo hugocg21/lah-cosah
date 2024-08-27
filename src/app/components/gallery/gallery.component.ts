@@ -12,6 +12,9 @@ import {
   faChevronRight,
   faLevelUpAlt,
   faEdit,
+  faUpload,
+  faSearch,
+  faFileUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { forkJoin } from 'rxjs';
 
@@ -25,13 +28,17 @@ export class GalleryComponent implements OnInit {
   multiSelectMode: boolean = false;
 
   folders: string[] = [];
+  filteredFolders: string[] = [];
   currentFolder: string | null = null;
   newFolderName: string = '';
   folderToRename: string | null = null;
+  selectedFiles: File[] = [];
+  selectedFolder: string | null = null;
 
   isModalOpen: boolean = false;
   isCreateFolderModalOpen: boolean = false;
   isRenameFolderModalOpen: boolean = false;
+  isUploadFilesModalOpen: boolean = false;
 
   hasFiles: boolean = false;
 
@@ -46,9 +53,13 @@ export class GalleryComponent implements OnInit {
   faChevronRight = faChevronRight;
   faLevelUpAlt = faLevelUpAlt;
   faEdit = faEdit;
+  faUpload = faUpload;
+  faSearch = faSearch;
+  faFileUpload = faFileUpload;
 
   totalMediaCount: number = 0;
   currentFolderMediaCount: number = 0;
+  searchTerm: string = '';
 
   constructor(private mediaService: MediaService) {}
 
@@ -64,11 +75,22 @@ export class GalleryComponent implements OnInit {
         this.folders = folders.sort((a, b) =>
           a.toLowerCase().localeCompare(b.toLowerCase())
         );
+        this.filteredFolders = this.folders;
       },
       (error) => {
         console.error('Error al obtener las carpetas:', error);
       }
     );
+  }
+
+  filterFolders(): void {
+    if (this.searchTerm) {
+      this.filteredFolders = this.folders.filter((folder) =>
+        folder.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    } else {
+      this.filteredFolders = [...this.folders];
+    }
   }
 
   loadMedia(): void {
@@ -173,6 +195,43 @@ export class GalleryComponent implements OnInit {
     this.isRenameFolderModalOpen = false;
     this.newFolderName = '';
     this.folderToRename = null;
+  }
+
+  openUploadFilesModal(): void {
+    if (this.currentFolder) {
+      this.selectedFolder = this.currentFolder;
+    } else {
+      this.selectedFolder = null;
+    }
+    this.isUploadFilesModalOpen = true;
+  }
+
+
+  closeUploadFilesModal(): void {
+    this.isUploadFilesModalOpen = false;
+    this.selectedFiles = [];
+  }
+
+  onFileSelected(event: any): void {
+    this.selectedFiles = Array.from(event.target.files) as File[];
+  }
+
+  uploadFiles(): void {
+    if (this.selectedFiles.length > 0) {
+      this.mediaService.uploadMedia(this.selectedFiles, this.selectedFolder).subscribe(
+        () => {
+          alert('Archivos subidos con éxito');
+          this.closeUploadFilesModal();
+          this.loadMedia();
+        },
+        (error) => {
+          console.error('Error al subir los archivos:', error);
+          alert('Error al subir los archivos');
+        }
+      );
+    } else {
+      alert('Por favor selecciona un archivo primero');
+    }
   }
 
   openModal(media: Media): void {

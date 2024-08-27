@@ -42,6 +42,11 @@
       <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200">
         Eliminar seleccionados
       </button>
+
+      <!-- Botón para abrir el modal de subir archivos -->
+      <button (click)="openUploadFilesModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
+        <fa-icon [icon]="faUpload" class="mr-2"></fa-icon> Subir Archivos
+      </button>
     </div>
   </div>
 
@@ -168,6 +173,59 @@
         <button (click)="renameFolder()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition duration-200">
           Renombrar
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para subir archivos -->
+  <div *ngIf="isUploadFilesModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="w-full max-w-lg bg-white rounded-lg shadow-md p-6 space-y-6">
+      <!-- Título y botón de cierre -->
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-semibold text-gray-800">Subir Archivos</h2>
+        <button (click)="closeUploadFilesModal()" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+          <fa-icon [icon]="faTimes" class="text-2xl"></fa-icon>
+        </button>
+      </div>
+
+      <div>
+        <label for="search" class="block text-gray-700 font-medium mb-2">Buscar Carpeta</label>
+        <div class="relative">
+          <input id="search" type="text" [(ngModel)]="searchTerm" placeholder="Escribe para buscar..." class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none
+            focus:ring-2 focus:ring-blue-500 transition duration-200" (input)="filterFolders()"/>
+          <fa-icon [icon]="faSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon>
+        </div>
+      </div>
+
+      <div>
+        <label for="folder" class="block text-gray-700 font-medium mb-2">Seleccionar Carpeta</label>
+        <div class="relative">
+          <select id="folder" [(ngModel)]="selectedFolder" class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 bg-white">
+            <option [ngValue]="null">Raíz</option>
+            <option *ngFor="let folder of filteredFolders" [ngValue]="folder">{{ folder }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <label for="files" class="flex items-center justify-center w-full sm:w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg cursor-pointer transition duration-200">
+          <fa-icon [icon]="faFileUpload" class="mr-2"></fa-icon>
+          <span>Seleccionar Archivos</span>
+          <input id="files" type="file" (change)="onFileSelected($event)" multiple class="hidden"/>
+        </label>
+
+        <button (click)="uploadFiles()" [disabled]="!selectedFiles || selectedFiles.length === 0" class="w-full sm:w-1/3 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white
+          font-medium py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          <fa-icon [icon]="faUpload" class="mr-2"></fa-icon>
+          <span>Subir</span>
+        </button>
+      </div>
+
+      <div *ngIf="selectedFiles && selectedFiles.length > 0" class="max-h-40 overflow-auto border border-gray-200 rounded-lg p-2">
+        <p class="text-gray-700 font-medium mb-2">Archivos Seleccionados:</p>
+        <ul class="list-disc list-inside text-gray-600">
+          <li *ngFor="let file of selectedFiles">{{ file.name }}</li>
+        </ul>
       </div>
     </div>
   </div>
