@@ -1,6 +1,12 @@
 <div class="p-4 md:p-8">
-  <!-- Header de la galería -->
-  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+  <!-- Botón de cambio de vista (solo en móvil) -->
+  <div class="flex justify-end md:hidden mb-4">
+    <button (click)="toggleViewMode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200">
+      <fa-icon [icon]="viewMode === 'list' ? faThLarge : faList"></fa-icon>
+    </button>
+  </div>
+   <!-- Header de la galería -->
+   <div class="flex flex-col md:flex-row justify-between items-center mb-6">
     <!-- Título dinámico -->
     <div class="flex flex-col space-y-2">
       <div class="flex items-center">
@@ -51,7 +57,7 @@
   </div>
 
   <!-- Lista de carpetas -->
-  <div *ngIf="!currentFolder" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+  <div [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
     <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer flex items-center justify-between hover:shadow-xl transition duration-200">
       <div class="flex items-center w-full" (click)="openFolder(folder)">
         <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>

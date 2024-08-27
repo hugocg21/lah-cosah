@@ -15,6 +15,8 @@ import {
   faUpload,
   faSearch,
   faFileUpload,
+  faThLarge,
+  faList,
 } from '@fortawesome/free-solid-svg-icons';
 import { forkJoin } from 'rxjs';
 
@@ -56,10 +58,14 @@ export class GalleryComponent implements OnInit {
   faUpload = faUpload;
   faSearch = faSearch;
   faFileUpload = faFileUpload;
+  faThLarge = faThLarge;
+  faList = faList;
 
   totalMediaCount: number = 0;
   currentFolderMediaCount: number = 0;
   searchTerm: string = '';
+
+  viewMode: 'list' | 'grid' = 'grid';
 
   constructor(private mediaService: MediaService) {}
 
@@ -206,7 +212,6 @@ export class GalleryComponent implements OnInit {
     this.isUploadFilesModalOpen = true;
   }
 
-
   closeUploadFilesModal(): void {
     this.isUploadFilesModalOpen = false;
     this.selectedFiles = [];
@@ -350,5 +355,9 @@ export class GalleryComponent implements OnInit {
         console.error('Error al mover el archivo:', error);
       }
     );
+  }
+
+  toggleViewMode(): void {
+    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
   }
 }
