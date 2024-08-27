@@ -52,22 +52,23 @@
 
   <!-- Lista de carpetas -->
   <div *ngIf="!currentFolder" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
-    <div *ngFor="let folder of folders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer flex items-center hover:shadow-xl transition duration-200" (dragover)="allowDrop($event)" (drop)="onDrop($event, folder)">
-      <div class="flex justify-between w-full">
-        <div class="flex items-center" (click)="openFolder(folder)">
+    <div *ngFor="let folder of folders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer hover:shadow-xl transition duration-200 flex justify-between items-center">
+      <div class="flex-1 min-w-0" (click)="openFolder(folder)">
+        <div class="flex items-center">
           <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>
           <p class="text-gray-700 font-medium truncate">{{ folder }}</p>
         </div>
-        <div class="flex flex-col ml-4">
-          <button (click)="openRenameFolderModal(folder)" class="text-yellow-500 hover:text-yellow-600 transition duration-200">
-            <fa-icon [icon]="faEdit"></fa-icon>
-          </button>
-          <button (click)="deleteFolder(folder)" class="text-red-500 hover:text-red-600 transition duration-200">
-            <fa-icon [icon]="faTrash"></fa-icon>
-          </button>
-        </div>
+      </div>
+      <div class="flex-shrink-0 flex ml-4 space-x-2">
+        <button (click)="openRenameFolderModal(folder)" class="text-yellow-500 hover:text-yellow-600 transition duration-200">
+          <fa-icon [icon]="faEdit"></fa-icon>
+        </button>
+        <button (click)="deleteFolder(folder)" class="text-red-500 hover:text-red-600 transition duration-200">
+          <fa-icon [icon]="faTrash"></fa-icon>
+        </button>
       </div>
     </div>
+
   </div>
 
   <!-- Botón para mover a la raíz -->
