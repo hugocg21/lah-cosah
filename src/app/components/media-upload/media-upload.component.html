@@ -1,68 +1,45 @@
-<div class="flex justify-center items-center min-h-full p-6">
-  <div
-    class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8 flex flex-col justify-between h-full"
-  >
-    <h2 class="text-3xl font-semibold text-gray-800 mb-6 text-center">
-      Subir Archivos
-    </h2>
-
-
-    <div class="relative mb-6 flex-grow">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        placeholder="Buscar carpeta..."
-        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-        (input)="filterFolders()"
-      />
-      <i class="fas fa-search absolute right-3 top-3 text-gray-500"></i>
-    </div>
-
-
-    <div class="mb-6 flex-grow">
-      <label class="block text-gray-600 text-sm font-medium mb-2" for="folder"
-        >Selecciona una carpeta</label
-      >
+<div class="flex items-center justify-center">
+  <div class="w-full max-w-lg bg-white rounded-lg shadow-md p-6 space-y-6">
+    <h2 class="text-2xl font-semibold text-gray-800 text-center">Subir Archivos</h2>
+    <div>
+      <label for="search" class="block text-gray-700 font-medium mb-2">Buscar Carpeta</label>
       <div class="relative">
-        <select
-          [(ngModel)]="selectedFolder"
-          name="folder"
-          id="folder"
-          class="appearance-none w-full border border-gray-300 rounded-lg py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 bg-white"
-        >
-          <option [ngValue]="null">Raíz</option>
-          <option *ngFor="let folder of filteredFolders" [ngValue]="folder">
-            {{ folder }}
-          </option>
-        </select>
-        <i
-          class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-        ></i>
+        <input id="search" type="text" [(ngModel)]="searchTerm" placeholder="Escribe para buscar..." class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none
+          focus:ring-2 focus:ring-blue-500 transition duration-200" (input)="filterFolders()"/>
+        <fa-icon [icon]="faSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon>
       </div>
     </div>
 
+    <div>
+      <label for="folder" class="block text-gray-700 font-medium mb-2">Seleccionar Carpeta</label>
+      <div class="relative">
+        <select id="folder" [(ngModel)]="selectedFolder" class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 bg-white">
+          <option [ngValue]="null">Raíz</option>
+          <option *ngFor="let folder of filteredFolders" [ngValue]="folder">{{ folder }}</option>
+        </select>
+        <!-- <fa-icon [icon]="faChevronDown" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon> -->
+      </div>
+    </div>
 
-    <div class="flex mb-6 space-x-2">
-      <label
-        for="files"
-        class="w-3/4 block text-gray-600 text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg shadow-md cursor-pointer text-center"
-      >
-        Selecciona archivos
+    <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+      <label for="files" class="flex items-center justify-center w-full sm:w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg cursor-pointer transition duration-200">
+        <fa-icon [icon]="faFileUpload" class="mr-2"></fa-icon>
+        <span>Seleccionar Archivos</span>
+        <input id="files" type="file" (change)="onFileSelected($event)" multiple class="hidden"/>
       </label>
-      <input
-        class="hidden"
-        id="files"
-        type="file"
-        (change)="onFileSelected($event)"
-        multiple
-      />
-      <button
-        class="w-1/4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex justify-center items-center"
-        type="button"
-        (click)="uploadFiles()"
-      >
-        <fa-icon [icon]="faUpload"></fa-icon>
+
+      <button (click)="uploadFiles()" [disabled]="!selectedFiles || selectedFiles.length === 0" class="w-full sm:w-1/3 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white
+        font-medium py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+        <fa-icon [icon]="faUpload" class="mr-2"></fa-icon>
+        <span>Subir</span>
       </button>
+    </div>
+
+    <div *ngIf="selectedFiles && selectedFiles.length > 0" class="max-h-40 overflow-auto border border-gray-200 rounded-lg p-2">
+      <p class="text-gray-700 font-medium mb-2">Archivos Seleccionados:</p>
+      <ul class="list-disc list-inside text-gray-600">
+        <li *ngFor="let file of selectedFiles">{{ file.name }}</li>
+      </ul>
     </div>
   </div>
 </div>

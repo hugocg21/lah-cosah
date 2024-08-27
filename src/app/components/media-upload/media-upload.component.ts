@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MediaService } from '../../services/media.service';
 import { Router } from '@angular/router';
-import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faUpload, faSearch, faChevronDown, faFileUpload } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-media-upload',
@@ -15,6 +15,9 @@ export class MediaUploadComponent implements OnInit {
   searchTerm: string = '';
 
   faUpload = faUpload;
+  faSearch = faSearch;
+  faChevronDown = faChevronDown;
+  faFileUpload = faFileUpload;
 
   constructor(private mediaService: MediaService, private router: Router) {}
 

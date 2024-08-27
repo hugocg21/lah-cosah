@@ -84,16 +84,16 @@ export class MediaService {
           );
         });
 
-        // Copy .keep file to the new folder if exists
+
         const copyKeepFile = this.storage.ref(`${oldFolderPath}/.keep`).getDownloadURL().pipe(
           mergeMap(url => from(fetch(url).then(res => res.blob()))),
           mergeMap(blob => this.storage.ref(`${newFolderPath}/.keep`).put(blob)),
-          catchError(() => of(null)) // Ignore errors if .keep file doesn't exist
+          catchError(() => of(null))
         );
 
         return forkJoin([...moveOps, copyKeepFile]).pipe(
           finalize(() => {
-            // Delete the old folder reference
+
             this.storage.ref(oldFolderPath).delete();
           })
         );

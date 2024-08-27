@@ -13,11 +13,11 @@ export class AuthGuard implements CanActivate {
   canActivate(): Observable<boolean> {
     return this.afAuth.authState.pipe(
       take(1),
-      map(user => !!user), // Devuelve true si el usuario está autenticado
+      map(user => !!user),
       tap(loggedIn => {
         if (!loggedIn) {
           console.log('access denied');
-          this.router.navigate(['/login']); // Redirige a la página de login si no está autenticado
+          this.router.navigate(['/login']);
         }
       })
     );
