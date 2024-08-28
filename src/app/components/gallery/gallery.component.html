@@ -80,7 +80,7 @@
   </div>
 
   <!-- Lista de carpetas -->
-  <div *ngIf="!currentFolder" [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+  <div *ngIf="!currentFolder" [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
     <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer hover:shadow-xl transition duration-200 flex justify-between items-center">
       <div class="flex-1 min-w-0" (click)="openFolder(folder)">
         <div class="flex items-center">
