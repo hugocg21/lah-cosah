@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { map, mergeMap, finalize, catchError } from 'rxjs/operators';
+import { map, mergeMap, finalize, catchError, last } from 'rxjs/operators';
 import { Observable, forkJoin, from, of } from 'rxjs';
 import { environment } from '../environments/environments';
 
@@ -84,7 +84,6 @@ export class MediaService {
           );
         });
 
-
         const copyKeepFile = this.storage.ref(`${oldFolderPath}/.keep`).getDownloadURL().pipe(
           mergeMap(url => from(fetch(url).then(res => res.blob()))),
           mergeMap(blob => this.storage.ref(`${newFolderPath}/.keep`).put(blob)),
@@ -92,10 +91,7 @@ export class MediaService {
         );
 
         return forkJoin([...moveOps, copyKeepFile]).pipe(
-          finalize(() => {
-
-            this.storage.ref(oldFolderPath).delete();
-          })
+          finalize(() => this.storage.ref(oldFolderPath).delete())
         );
       }),
       map(() => void 0)
@@ -105,19 +101,23 @@ export class MediaService {
   uploadMedia(files: File[], folder: string | null): Observable<Media[]> {
     const folderPath = folder ? `${this.basePath}/${folder}` : this.basePath;
     const uploads = files.map((file) => {
-      const filePath = `${folderPath}/${Date.now()}_${file.name}`;
-      const fileRef = this.storage.ref(filePath);
-      const task = this.storage.upload(filePath, file);
+        const filePath = `${folderPath}/${Date.now()}_${file.name}`;
+        const fileRef = this.storage.ref(filePath);
+        const task = this.storage.upload(filePath, file);
 
-      return task.snapshotChanges().pipe(
-        finalize(() => fileRef.getDownloadURL()),
-        mergeMap(() => fileRef.getDownloadURL()),
-        map((url) => ({ id: -1, name: file.name, url }))
-      );
+        return task.snapshotChanges().pipe(
+            // Wait until the upload is fully complete
+            finalize(() => console.log(`Upload complete for: ${file.name}`)),
+            // Ensure the download URL is retrieved after the upload completes
+            last(), // Use last() to wait for the final state (completion)
+            mergeMap(() => fileRef.getDownloadURL()),
+            map((url) => ({ id: -1, name: file.name, url }))
+        );
     });
 
     return forkJoin(uploads);
-  }
+}
+
 
   deleteMedia(media: Media): Observable<void> {
     return from(this.storage.refFromURL(media.url).delete());
