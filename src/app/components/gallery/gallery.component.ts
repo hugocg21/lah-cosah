@@ -17,6 +17,7 @@ import {
   faFileUpload,
   faThLarge,
   faList,
+  faCheckSquare
 } from '@fortawesome/free-solid-svg-icons';
 import { forkJoin } from 'rxjs';
 
@@ -60,6 +61,7 @@ export class GalleryComponent implements OnInit {
   faFileUpload = faFileUpload;
   faThLarge = faThLarge;
   faList = faList;
+  faCheckSquare = faCheckSquare;
 
   totalMediaCount: number = 0;
   currentFolderMediaCount: number = 0;

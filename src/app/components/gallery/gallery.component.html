@@ -57,8 +57,9 @@
             <span class="hidden md:inline ml-2">Eliminar seleccionados</span>
           </button>
 
-          <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
-            Seleccionar todas
+          <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded md:mt-0 md:ml-2">
+            <fa-icon [icon]="faCheckSquare"></fa-icon>
+            <span class="hidden md:inline ml-2">Seleccionar todas</span>
           </button>
 
           <!-- Botón para abrir el modal de subir archivos -->
