@@ -75,26 +75,8 @@
   </div>
 
   <!-- Lista de carpetas -->
-  <!-- <div [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-    <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer flex items-center justify-between hover:shadow-xl transition duration-200">
-      <div class="flex items-center w-full" (click)="openFolder(folder)">
-        <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>
-        <p class="text-gray-700 font-medium truncate w-full">{{ folder }}</p>
-      </div>
-      <div class="flex space-x-2">
-        <button (click)="openRenameFolderModal(folder)" class="text-yellow-500 hover:text-yellow-600 transition duration-200">
-          <fa-icon [icon]="faEdit"></fa-icon>
-        </button>
-        <button (click)="deleteFolder(folder)" class="text-red-500 hover:text-red-600 transition duration-200">
-          <fa-icon [icon]="faTrash"></fa-icon>
-        </button>
-      </div>
-    </div>
-  </div> -->
-
-  <!-- Lista de carpetas -->
   <div *ngIf="!currentFolder" [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
-    <div *ngFor="let folder of folders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer hover:shadow-xl transition duration-200 flex justify-between items-center">
+    <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer hover:shadow-xl transition duration-200 flex justify-between items-center">
       <div class="flex-1 min-w-0" (click)="openFolder(folder)">
         <div class="flex items-center">
           <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>
