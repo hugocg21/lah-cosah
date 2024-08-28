@@ -360,4 +360,9 @@ export class GalleryComponent implements OnInit {
   toggleViewMode(): void {
     this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
   }
+
+  selectAllMedia(): void {
+    const allSelected = this.mediaList.every((media) => media.selected);
+    this.mediaList.forEach((media) => (media.selected = !allSelected));
+  }
 }

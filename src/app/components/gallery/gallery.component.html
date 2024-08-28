@@ -57,6 +57,10 @@
             <span class="hidden md:inline ml-2">Eliminar seleccionados</span>
           </button>
 
+          <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2 md:mt-0 md:ml-2">
+            Seleccionar todas
+          </button>
+
           <!-- Botón para abrir el modal de subir archivos -->
           <button (click)="openUploadFilesModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
             <fa-icon [icon]="faUpload"></fa-icon>
