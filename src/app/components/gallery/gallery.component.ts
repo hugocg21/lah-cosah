@@ -73,7 +73,16 @@ export class GalleryComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFolders();
-    this.loadMedia();
+
+    // Restaurar la carpeta desde localStorage si existe
+    const savedFolder = localStorage.getItem('currentFolder');
+    if (savedFolder) {
+      this.currentFolder = savedFolder;
+      this.loadMedia();
+    } else {
+      this.loadMedia();
+    }
+
     this.calculateTotalMediaCount();
   }
 
@@ -164,6 +173,7 @@ export class GalleryComponent implements OnInit {
 
   openFolder(folder: string): void {
     this.currentFolder = folder;
+    localStorage.setItem('currentFolder', folder); // Guardar en localStorage
     this.mediaList = [];
     this.hasFiles = false;
     this.currentFolderMediaCount = 0;
@@ -172,6 +182,7 @@ export class GalleryComponent implements OnInit {
 
   goBack(): void {
     this.currentFolder = null;
+    localStorage.removeItem('currentFolder'); // Eliminar de localStorage
     this.mediaList = [];
     this.hasFiles = false;
     this.currentFolderMediaCount = 0;
