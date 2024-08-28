@@ -1,75 +1,94 @@
 <div class="p-4 md:p-8">
-  <!-- Botón de cambio de vista (solo en móvil) -->
-  <div class="flex justify-end md:hidden mb-4">
-    <button (click)="toggleViewMode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200">
-      <fa-icon [icon]="viewMode === 'list' ? faThLarge : faList"></fa-icon>
-    </button>
-  </div>
-   <!-- Header de la galería -->
-   <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-    <!-- Título dinámico -->
-    <div class="flex flex-col space-y-2">
-      <div class="flex items-center">
+  <!-- Header de la galería -->
+<div class="flex flex-col md:flex-row justify-between items-center mb-6">
+
+  <!-- Contenedor del título, botones y datos de carpetas -->
+  <div class="flex flex-col md:flex-row md:items-center w-full space-y-2 md:space-y-0">
+
+    <!-- Contenedor del título y botones -->
+    <div class="flex items-center justify-between w-full">
+
+      <!-- Título y Botón de Atrás -->
+      <div class="flex flex-col items-center space-x-2">
         <!-- Botón de Atrás -->
         <button *ngIf="currentFolder" (click)="goBack()" class="flex items-center text-blue-600 hover:text-blue-700 transition duration-200 mr-2">
-          <fa-icon [icon]="faArrowLeft" class="mr-2"></fa-icon> Atrás
+          <fa-icon [icon]="faArrowLeft"></fa-icon>
+          <span class="hidden md:inline ml-2">Atrás</span>
         </button>
+
         <!-- Título Dinámico -->
         <h2 class="text-2xl md:text-4xl font-bold text-gray-900">
           {{ currentFolder ? currentFolder : 'Galería de Medios' }}
         </h2>
+
+        <!-- Datos de carpetas y archivos (se mantiene la estructura de filas para pantallas pequeñas) -->
+        <div class="flex space-x-4 text-gray-600 text-sm md:text-base mt-4 md:mt-0 md:ml-4">
+          <div *ngIf="!currentFolder">
+            <p>Total de carpetas: <span class="font-semibold">{{ folders.length }}</span></p>
+          </div>
+          <div>
+            <p>Total de archivos: <span class="font-semibold">{{ totalMediaCount }}</span></p>
+          </div>
+          <div *ngIf="currentFolder">
+            <p>Archivos en esta carpeta: <span class="font-semibold">{{ currentFolderMediaCount }}</span></p>
+          </div>
+        </div>
       </div>
-      <div class="flex space-x-4 text-gray-600 text-sm md:text-base">
-        <div *ngIf="!currentFolder">
-          <p>Total de carpetas: <span class="font-semibold">{{ folders.length }}</span></p>
-        </div>
-        <div>
-          <p>Total de archivos: <span class="font-semibold">{{ totalMediaCount }}</span></p>
-        </div>
-        <div *ngIf="currentFolder">
-          <p>Archivos en esta carpeta: <span class="font-semibold">{{ currentFolderMediaCount }}</span></p>
+
+      <!-- Botones de acción -->
+      <div class="flex items-center space-x-2 ml-auto">
+        <!-- Botón de Crear Carpeta -->
+        <button *ngIf="!currentFolder" (click)="openCreateFolderModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
+          <fa-icon [icon]="faFolder"></fa-icon>
+          <span class="hidden md:inline ml-2">Crear Carpeta</span>
+        </button>
+
+        <!-- Botón de selección múltiple -->
+        <button *ngIf="hasFiles" (click)="toggleMultiSelect()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
+          <fa-icon [icon]="multiSelectMode ? faTimes : faCheckDouble"></fa-icon>
+          <span class="hidden md:inline ml-2">{{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}</span>
+        </button>
+
+        <!-- Botón para eliminar seleccionados -->
+        <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
+          <fa-icon [icon]="faTrash"></fa-icon>
+          <span class="hidden md:inline ml-2">Eliminar seleccionados</span>
+        </button>
+
+        <!-- Botón para abrir el modal de subir archivos -->
+        <button (click)="openUploadFilesModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
+          <fa-icon [icon]="faUpload"></fa-icon>
+          <span class="hidden md:inline ml-2">Subir Archivos</span>
+        </button>
+
+        <!-- Botón para cambiar el modo de vista en móviles -->
+        <div class="flex justify-end md:hidden">
+          <button (click)="toggleViewMode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200">
+            <fa-icon [icon]="viewMode === 'list' ? faThLarge : faList"></fa-icon>
+          </button>
         </div>
       </div>
-    </div>
-
-    <!-- Botones de acción -->
-    <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mt-4 md:mt-0">
-      <!-- Botón de Crear Carpeta (solo se muestra si no estás dentro de una carpeta) -->
-      <button *ngIf="!currentFolder" (click)="openCreateFolderModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
-        <fa-icon [icon]="faFolder" class="mr-2"></fa-icon> Crear Carpeta
-      </button>
-
-      <button *ngIf="hasFiles" (click)="toggleMultiSelect()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200">
-        <fa-icon [icon]="multiSelectMode ? faTimes : faCheckDouble" class="mr-2"></fa-icon>
-        {{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}
-      </button>
-
-      <!-- Botón para eliminar seleccionados (visible solo cuando hay selección múltiple activada y medios seleccionados) -->
-      <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200">
-        Eliminar seleccionados
-      </button>
-
-      <!-- Botón para abrir el modal de subir archivos -->
-      <button (click)="openUploadFilesModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
-        <fa-icon [icon]="faUpload" class="mr-2"></fa-icon> Subir Archivos
-      </button>
     </div>
   </div>
+</div>
+
 
   <!-- Lista de carpetas -->
-  <div [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-    <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer flex items-center justify-between hover:shadow-xl transition duration-200">
-      <div class="flex items-center w-full" (click)="openFolder(folder)">
-        <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>
-        <p class="text-gray-700 font-medium truncate w-full">{{ folder }}</p>
-      </div>
-      <div class="flex space-x-2">
-        <button (click)="openRenameFolderModal(folder)" class="text-yellow-500 hover:text-yellow-600 transition duration-200">
-          <fa-icon [icon]="faEdit"></fa-icon>
-        </button>
-        <button (click)="deleteFolder(folder)" class="text-red-500 hover:text-red-600 transition duration-200">
-          <fa-icon [icon]="faTrash"></fa-icon>
-        </button>
+  <div *ngIf="!currentFolder" [ngClass]="{'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8': viewMode === 'grid', 'space-y-4': viewMode === 'list'}">
+    <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer flex items-center hover:shadow-xl transition duration-200" (dragover)="allowDrop($event)" (drop)="onDrop($event, folder)">
+      <div class="flex justify-between w-full">
+        <div class="flex items-center" (click)="openFolder(folder)">
+          <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>
+          <p class="text-gray-700 font-medium truncate">{{ folder }}</p>
+        </div>
+        <div class="flex flex-col ml-4">
+          <button (click)="openRenameFolderModal(folder)" class="text-yellow-500 hover:text-yellow-600 transition duration-200">
+            <fa-icon [icon]="faEdit"></fa-icon>
+          </button>
+          <button (click)="deleteFolder(folder)" class="text-red-500 hover:text-red-600 transition duration-200">
+            <fa-icon [icon]="faTrash"></fa-icon>
+          </button>
+        </div>
       </div>
     </div>
   </div>
