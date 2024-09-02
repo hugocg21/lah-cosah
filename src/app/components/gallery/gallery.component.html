@@ -1,13 +1,11 @@
 <div class="p-4 md:p-8">
   <!-- Header de la galería -->
   <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-
     <!-- Contenedor del título, botones y datos de carpetas -->
     <div class="flex flex-col md:flex-row md:items-center w-full space-y-2 md:space-y-0">
 
       <!-- Contenedor del título y botones -->
       <div class="flex items-center justify-between w-full">
-
         <!-- Título y Botón de Atrás -->
         <div class="flex flex-col space-x-2">
           <div class="flex items-center">
@@ -19,11 +17,11 @@
 
             <!-- Título Dinámico -->
             <h2 class="text-2xl md:text-4xl font-bold text-gray-900">
-             {{ currentFolder ? currentFolder : 'Galería de Medios' }}
+              {{ currentFolder ? currentFolder : 'Galería de Medios' }}
             </h2>
           </div>
 
-          <!-- Datos de carpetas y archivos (se mantiene la estructura de filas para pantallas pequeñas) -->
+          <!-- Datos de carpetas y archivos -->
           <div class="flex space-x-4 text-gray-600 text-sm md:text-base mt-4 md:mt-0 md:ml-4">
             <div *ngIf="!currentFolder">
               <p>Total de carpetas: <span class="font-semibold">{{ folders.length }}</span></p>
@@ -76,6 +74,20 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda de carpetas -->
+  <div *ngIf="!currentFolder" class="mb-4">
+    <div class="relative">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder="Buscar carpetas..."
+        class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+        (input)="filterFolders()"
+      />
+      <fa-icon [icon]="faSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon>
     </div>
   </div>
 
@@ -220,8 +232,7 @@
       <div>
         <label for="search" class="block text-gray-700 font-medium mb-2">Buscar Carpeta</label>
         <div class="relative">
-          <input id="search" type="text" [(ngModel)]="searchTerm" placeholder="Escribe para buscar..." class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none
-            focus:ring-2 focus:ring-blue-500 transition duration-200" (input)="filterFolders()"/>
+          <input id="search" type="text" [(ngModel)]="searchTerm" placeholder="Escribe para buscar..." class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" (input)="filterFolders()"/>
           <fa-icon [icon]="faSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon>
         </div>
       </div>
@@ -243,8 +254,7 @@
           <input id="files" type="file" (change)="onFileSelected($event)" multiple class="hidden"/>
         </label>
 
-        <button (click)="uploadFiles()" [disabled]="!selectedFiles || selectedFiles.length === 0" class="w-full sm:w-1/3 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white
-          font-medium py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+        <button (click)="uploadFiles()" [disabled]="!selectedFiles || selectedFiles.length === 0" class="w-full sm:w-1/3 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
           <fa-icon [icon]="faUpload" class="mr-2"></fa-icon>
           <span>Subir</span>
         </button>

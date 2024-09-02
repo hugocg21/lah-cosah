@@ -1,9 +1,15 @@
 <div class="min-h-screen flex flex-col bg-gray-50">
 
-  <!-- Header con el título centrado -->
+  <!-- Header con el título centrado y notificaciones -->
   <header class="bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg">
-    <div class="container mx-auto px-4 py-6 flex justify-center items-center">
-      <h1 class="text-3xl font-bold tracking-wide text-center">Lah cosah</h1>
+    <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+      <!-- Título centrado -->
+      <h1 class="text-3xl font-bold tracking-wide">Lah cosah</h1>
+
+      <!-- Componente de historial de subidas -->
+      <div class="relative">
+        <app-upload-history></app-upload-history>
+      </div>
     </div>
   </header>
 

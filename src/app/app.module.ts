@@ -17,6 +17,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { environment } from './environments/environments';
 import { RouterModule } from '@angular/router';
+import { UploadHistoryComponent } from './components/upload-history/upload-history.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { RouterModule } from '@angular/router';
     MediaUploadComponent,
     GalleryComponent,
     MediaModalComponent,
+    UploadHistoryComponent
   ],
   imports: [
     BrowserModule,

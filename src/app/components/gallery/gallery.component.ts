@@ -20,6 +20,8 @@ import {
   faCheckSquare
 } from '@fortawesome/free-solid-svg-icons';
 import { forkJoin } from 'rxjs';
+import { UploadHistoryService } from '../../services/upload-history.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-gallery',
@@ -69,21 +71,27 @@ export class GalleryComponent implements OnInit {
 
   viewMode: 'list' | 'grid' = 'grid';
 
-  constructor(private mediaService: MediaService) {}
+  constructor(private mediaService: MediaService, private uploadHistoryService: UploadHistoryService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.loadFolders();
+    this.authService.isLoggedIn().subscribe((loggedIn) => {
+      if (loggedIn) {
+        this.loadFolders();
 
-    // Restaurar la carpeta desde localStorage si existe
-    const savedFolder = localStorage.getItem('currentFolder');
-    if (savedFolder) {
-      this.currentFolder = savedFolder;
-      this.loadMedia();
-    } else {
-      this.loadMedia();
-    }
+        const savedFolder = localStorage.getItem('currentFolder');
+        if (savedFolder) {
+          this.currentFolder = savedFolder;
+          this.loadMedia();
+        } else {
+          this.loadMedia();
+        }
 
-    this.calculateTotalMediaCount();
+        this.calculateTotalMediaCount();
+      } else {
+        // Redirigir al login u otra acción
+        console.error('Usuario no autenticado');
+      }
+    });
   }
 
   loadFolders(): void {
@@ -234,10 +242,35 @@ export class GalleryComponent implements OnInit {
     this.selectedFiles = Array.from(event.target.files) as File[];
   }
 
+  // uploadFiles(): void {
+  //   if (this.selectedFiles.length > 0) {
+  //     this.mediaService.uploadMedia(this.selectedFiles, this.selectedFolder).subscribe(
+  //       () => {
+  //         alert('Archivos subidos con éxito');
+  //         this.closeUploadFilesModal();
+  //         this.loadMedia();
+  //       },
+  //       (error) => {
+  //         console.error('Error al subir los archivos:', error);
+  //         alert('Error al subir los archivos');
+  //       }
+  //     );
+  //   } else {
+  //     alert('Por favor selecciona un archivo primero');
+  //   }
+  // }
+
   uploadFiles(): void {
     if (this.selectedFiles.length > 0) {
       this.mediaService.uploadMedia(this.selectedFiles, this.selectedFolder).subscribe(
-        () => {
+        (uploadedMedia) => {
+          uploadedMedia.forEach(media => {
+            this.uploadHistoryService.addToHistory({
+              folder: this.selectedFolder || 'Raíz',
+              fileName: media.name,
+              date: new Date()
+            });
+          });
           alert('Archivos subidos con éxito');
           this.closeUploadFilesModal();
           this.loadMedia();
