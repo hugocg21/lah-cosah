@@ -1,146 +1,149 @@
-<div class="p-4 md:p-8">
-  <!-- Header de la galería -->
-  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-    <!-- Contenedor del título, botones y datos de carpetas -->
-    <div class="flex flex-col md:flex-row md:items-center w-full space-y-2 md:space-y-0">
+<div class="relative">
+  <!-- Contenedor principal con posible desenfoque -->
+  <div [ngClass]="{'blur-md': isModalOpen}" class="p-4 md:p-8">
+    <!-- Header de la galería -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+      <!-- Contenedor del título, botones y datos de carpetas -->
+      <div class="flex flex-col md:flex-row md:items-center w-full space-y-2 md:space-y-0">
 
-      <!-- Contenedor del título y botones -->
-      <div class="flex items-center justify-between w-full">
-        <!-- Título y Botón de Atrás -->
-        <div class="flex flex-col space-x-2">
+        <!-- Contenedor del título y botones -->
+        <div class="flex items-center justify-between w-full">
+          <!-- Título y Botón de Atrás -->
+          <div class="flex flex-col space-x-2">
+            <div class="flex items-center">
+              <!-- Botón de Atrás -->
+              <button *ngIf="currentFolder" (click)="goBack()" class="flex items-center text-blue-600 hover:text-blue-700 transition duration-200 mr-3">
+                <fa-icon [icon]="faArrowLeft"></fa-icon>
+                <span class="md:inline ml-2">Atrás</span>
+              </button>
+
+              <!-- Título Dinámico -->
+              <h2 class="text-2xl md:text-4xl font-bold text-gray-900">
+                {{ currentFolder ? currentFolder : 'Galería de Medios' }}
+              </h2>
+            </div>
+
+            <!-- Datos de carpetas y archivos -->
+            <div class="flex space-x-4 text-gray-600 text-sm md:text-base mt-4 md:mt-0 md:ml-4">
+              <div *ngIf="!currentFolder">
+                <p>Total de carpetas: <span class="font-semibold">{{ folders.length }}</span></p>
+              </div>
+              <div>
+                <p>Total de archivos: <span class="font-semibold">{{ totalMediaCount }}</span></p>
+              </div>
+              <div *ngIf="currentFolder">
+                <p>Archivos en esta carpeta: <span class="font-semibold">{{ currentFolderMediaCount }}</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="flex items-center space-x-2 ml-auto">
+            <!-- Botón de Crear Carpeta -->
+            <button *ngIf="!currentFolder" (click)="openCreateFolderModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
+              <fa-icon [icon]="faFolder"></fa-icon>
+              <span class="hidden md:inline ml-2">Crear Carpeta</span>
+            </button>
+
+            <!-- Botón de selección múltiple -->
+            <button *ngIf="hasFiles" (click)="toggleMultiSelect()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
+              <fa-icon [icon]="multiSelectMode ? faTimes : faCheckDouble"></fa-icon>
+              <span class="hidden md:inline ml-2">{{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}</span>
+            </button>
+
+            <!-- Botón para eliminar seleccionados -->
+            <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
+              <fa-icon [icon]="faTrash"></fa-icon>
+              <span class="hidden md:inline ml-2">Eliminar seleccionados</span>
+            </button>
+
+            <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded md:mt-0 md:ml-2">
+              <fa-icon [icon]="faCheckSquare"></fa-icon>
+              <span class="hidden md:inline ml-2">Seleccionar todas</span>
+            </button>
+
+            <!-- Botón para abrir el modal de subir archivos -->
+            <button (click)="openUploadFilesModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
+              <fa-icon [icon]="faUpload"></fa-icon>
+              <span class="hidden md:inline ml-2">Subir Archivos</span>
+            </button>
+
+            <!-- Botón para cambiar el modo de vista en móviles -->
+            <div class="flex justify-end md:hidden">
+              <button (click)="toggleViewMode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200">
+                <fa-icon [icon]="viewMode === 'list' ? faThLarge : faList"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de búsqueda de carpetas -->
+    <div *ngIf="!currentFolder" class="mb-4">
+      <div class="relative">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar carpetas..."
+          class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          (input)="filterFolders()"
+        />
+        <fa-icon [icon]="faSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon>
+      </div>
+    </div>
+
+    <!-- Lista de carpetas -->
+    <div *ngIf="!currentFolder" [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
+      <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer hover:shadow-xl transition duration-200 flex justify-between items-center">
+        <div class="flex-1 min-w-0" (click)="openFolder(folder)">
           <div class="flex items-center">
-            <!-- Botón de Atrás -->
-            <button *ngIf="currentFolder" (click)="goBack()" class="flex items-center text-blue-600 hover:text-blue-700 transition duration-200 mr-3">
-              <fa-icon [icon]="faArrowLeft"></fa-icon>
-              <span class="md:inline ml-2">Atrás</span>
-            </button>
-
-            <!-- Título Dinámico -->
-            <h2 class="text-2xl md:text-4xl font-bold text-gray-900">
-              {{ currentFolder ? currentFolder : 'Galería de Medios' }}
-            </h2>
-          </div>
-
-          <!-- Datos de carpetas y archivos -->
-          <div class="flex space-x-4 text-gray-600 text-sm md:text-base mt-4 md:mt-0 md:ml-4">
-            <div *ngIf="!currentFolder">
-              <p>Total de carpetas: <span class="font-semibold">{{ folders.length }}</span></p>
-            </div>
-            <div>
-              <p>Total de archivos: <span class="font-semibold">{{ totalMediaCount }}</span></p>
-            </div>
-            <div *ngIf="currentFolder">
-              <p>Archivos en esta carpeta: <span class="font-semibold">{{ currentFolderMediaCount }}</span></p>
-            </div>
+            <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>
+            <p class="text-gray-700 font-medium truncate">{{ folder }}</p>
           </div>
         </div>
-
-        <!-- Botones de acción -->
-        <div class="flex items-center space-x-2 ml-auto">
-          <!-- Botón de Crear Carpeta -->
-          <button *ngIf="!currentFolder" (click)="openCreateFolderModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
-            <fa-icon [icon]="faFolder"></fa-icon>
-            <span class="hidden md:inline ml-2">Crear Carpeta</span>
+        <div class="flex-shrink-0 flex ml-4 space-x-2">
+          <button (click)="openRenameFolderModal(folder)" class="text-yellow-500 hover:text-yellow-600 transition duration-200">
+            <fa-icon [icon]="faEdit"></fa-icon>
           </button>
-
-          <!-- Botón de selección múltiple -->
-          <button *ngIf="hasFiles" (click)="toggleMultiSelect()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
-            <fa-icon [icon]="multiSelectMode ? faTimes : faCheckDouble"></fa-icon>
-            <span class="hidden md:inline ml-2">{{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}</span>
-          </button>
-
-          <!-- Botón para eliminar seleccionados -->
-          <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
+          <button (click)="deleteFolder(folder)" class="text-red-500 hover:text-red-600 transition duration-200">
             <fa-icon [icon]="faTrash"></fa-icon>
-            <span class="hidden md:inline ml-2">Eliminar seleccionados</span>
           </button>
-
-          <button *ngIf="multiSelectMode" (click)="selectAllMedia()" class="bg-blue-500 text-white px-4 py-2 rounded md:mt-0 md:ml-2">
-            <fa-icon [icon]="faCheckSquare"></fa-icon>
-            <span class="hidden md:inline ml-2">Seleccionar todas</span>
-          </button>
-
-          <!-- Botón para abrir el modal de subir archivos -->
-          <button (click)="openUploadFilesModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
-            <fa-icon [icon]="faUpload"></fa-icon>
-            <span class="hidden md:inline ml-2">Subir Archivos</span>
-          </button>
-
-          <!-- Botón para cambiar el modo de vista en móviles -->
-          <div class="flex justify-end md:hidden">
-            <button (click)="toggleViewMode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200">
-              <fa-icon [icon]="viewMode === 'list' ? faThLarge : faList"></fa-icon>
-            </button>
-          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Barra de búsqueda de carpetas -->
-  <div *ngIf="!currentFolder" class="mb-4">
-    <div class="relative">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        placeholder="Buscar carpetas..."
-        class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-        (input)="filterFolders()"
-      />
-      <fa-icon [icon]="faSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon>
+    <!-- Botón para mover a la raíz -->
+    <div *ngIf="currentFolder" class="mb-4">
+      <div class="bg-blue-100 text-blue-700 p-4 rounded-lg text-center cursor-pointer hover:bg-blue-200 transition duration-200 flex items-center justify-center space-x-2" (drop)="onDropToRoot($event)" (dragover)="allowDrop($event)">
+        <fa-icon [icon]="faLevelUpAlt"></fa-icon>
+        <span>Mover a la raíz</span>
+      </div>
     </div>
-  </div>
 
-  <!-- Lista de carpetas -->
-  <div *ngIf="!currentFolder" [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
-    <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer hover:shadow-xl transition duration-200 flex justify-between items-center">
-      <div class="flex-1 min-w-0" (click)="openFolder(folder)">
-        <div class="flex items-center">
-          <fa-icon [icon]="faFolder" class="text-3xl md:text-5xl text-blue-500 mr-2"></fa-icon>
-          <p class="text-gray-700 font-medium truncate">{{ folder }}</p>
+    <!-- Lista de medios en la carpeta -->
+    <div *ngIf="mediaList.length > 0; else noMedia" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      <div *ngFor="let media of mediaList" class="rounded-lg shadow-lg relative overflow-hidden hover:shadow-xl transition duration-200" draggable="true" (dragstart)="onDragStart($event, media)">
+        <div class="absolute top-2 left-2 flex items-center space-x-2">
+          <fa-icon *ngIf="isVideo(media.url)" [icon]="faVideo" class="text-white bg-black bg-opacity-50 p-1 rounded"></fa-icon>
+          <fa-icon *ngIf="!isVideo(media.url)" [icon]="faImage" class="text-white bg-black bg-opacity-50 p-1 rounded"></fa-icon>
         </div>
-      </div>
-      <div class="flex-shrink-0 flex ml-4 space-x-2">
-        <button (click)="openRenameFolderModal(folder)" class="text-yellow-500 hover:text-yellow-600 transition duration-200">
-          <fa-icon [icon]="faEdit"></fa-icon>
+
+        <ng-container *ngIf="isVideo(media.url); else imageTemplate">
+          <video #videoRef [src]="media.url" autoplay muted loop class="w-full h-32 md:h-48 object-cover cursor-pointer" (click)="openModal(media, videoRef)"></video>
+        </ng-container>
+
+        <ng-template #imageTemplate>
+          <img [src]="media.url" alt="Uploaded media" class="w-full h-32 md:h-48 object-cover cursor-pointer" (click)="openModal(media, null)" />
+        </ng-template>
+
+        <div *ngIf="multiSelectMode" class="absolute top-2 right-2">
+          <input type="checkbox" [(ngModel)]="media.selected" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+        </div>
+        <button *ngIf="!multiSelectMode" (click)="deleteMedia(media)" class="text-red-500 absolute top-2 right-2 hover:text-red-600 transition duration-200">
+          <fa-icon [icon]="faTrash" class="bg-black bg-opacity-50 p-1 rounded"></fa-icon>
         </button>
-        <button (click)="deleteFolder(folder)" class="text-red-500 hover:text-red-600 transition duration-200">
-          <fa-icon [icon]="faTrash"></fa-icon>
-        </button>
       </div>
-    </div>
-  </div>
-
-  <!-- Botón para mover a la raíz -->
-  <div *ngIf="currentFolder" class="mb-4">
-    <div class="bg-blue-100 text-blue-700 p-4 rounded-lg text-center cursor-pointer hover:bg-blue-200 transition duration-200 flex items-center justify-center space-x-2" (drop)="onDropToRoot($event)" (dragover)="allowDrop($event)">
-      <fa-icon [icon]="faLevelUpAlt"></fa-icon>
-      <span>Mover a la raíz</span>
-    </div>
-  </div>
-
-  <!-- Lista de medios en la carpeta -->
-  <div *ngIf="mediaList.length > 0; else noMedia" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-    <div *ngFor="let media of mediaList" class="rounded-lg shadow-lg relative overflow-hidden hover:shadow-xl transition duration-200" draggable="true" (dragstart)="onDragStart($event, media)">
-      <div class="absolute top-2 left-2 flex items-center space-x-2">
-        <fa-icon *ngIf="isVideo(media.url)" [icon]="faVideo" class="text-white bg-black bg-opacity-50 p-1 rounded"></fa-icon>
-        <fa-icon *ngIf="!isVideo(media.url)" [icon]="faImage" class="text-white bg-black bg-opacity-50 p-1 rounded"></fa-icon>
-      </div>
-
-      <ng-container *ngIf="isVideo(media.url); else imageTemplate">
-        <video [src]="media.url" class="w-full h-32 md:h-48 object-cover cursor-pointer" (click)="openModal(media)"></video>
-      </ng-container>
-
-      <ng-template #imageTemplate>
-        <img [src]="media.url" alt="Uploaded media" class="w-full h-32 md:h-48 object-cover cursor-pointer" (click)="openModal(media)" />
-      </ng-template>
-
-      <div *ngIf="multiSelectMode" class="absolute top-2 right-2">
-        <input type="checkbox" [(ngModel)]="media.selected" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-      </div>
-      <button *ngIf="!multiSelectMode" (click)="deleteMedia(media)" class="text-red-500 absolute top-2 right-2 hover:text-red-600 transition duration-200">
-        <fa-icon [icon]="faTrash" class="bg-black bg-opacity-50 p-1 rounded"></fa-icon>
-      </button>
     </div>
   </div>
 
@@ -165,7 +168,7 @@
 
       <!-- Contenido del modal -->
       <ng-container *ngIf="isVideo(selectedMedia.url); else imageModal">
-        <video [src]="selectedMedia.url" controls class="max-w-full max-h-screen rounded-lg shadow-lg"></video>
+        <video [src]="selectedMedia.url" controls autoplay muted class="max-w-full max-h-screen rounded-lg shadow-lg"></video>
       </ng-container>
 
       <ng-template #imageModal>

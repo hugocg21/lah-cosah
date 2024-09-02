@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MediaService, Media } from '../../services/media.service';
 import {
   faTrash,
@@ -27,7 +27,9 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-gallery',
   templateUrl: './gallery.component.html',
 })
-export class GalleryComponent implements OnInit {
+export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit {
+  @ViewChildren('videoRef') videos!: QueryList<ElementRef<HTMLVideoElement>>;
+
   mediaList: Media[] = [];
   selectedMedia: Media | null = null;
   multiSelectMode: boolean = false;
@@ -91,6 +93,21 @@ export class GalleryComponent implements OnInit {
         // Redirigir al login u otra acción
         console.error('Usuario no autenticado');
       }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.ensureVideosAreMuted();
+  }
+
+  ngAfterViewChecked(): void {
+    this.ensureVideosAreMuted();
+  }
+
+  ensureVideosAreMuted(): void {
+    const videos = document.querySelectorAll('video');
+    videos.forEach(video => {
+      video.muted = true;
     });
   }
 
@@ -285,14 +302,24 @@ export class GalleryComponent implements OnInit {
     }
   }
 
-  openModal(media: Media): void {
+  openModal(media: Media, videoElement: HTMLVideoElement | null): void {
     this.selectedMedia = media;
     this.isModalOpen = true;
+
+    this.videos.forEach((video) => {
+      if (video.nativeElement !== videoElement) {
+        video.nativeElement.pause();
+      }
+    });
   }
 
   closeModal(): void {
     this.isModalOpen = false;
     this.selectedMedia = null;
+
+    this.videos.forEach((video) => {
+      video.nativeElement.play();
+    });
   }
 
   navigateNext(): void {
