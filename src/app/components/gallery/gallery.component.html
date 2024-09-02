@@ -1,29 +1,19 @@
 <div class="relative">
-  <!-- Contenedor principal con posible desenfoque -->
   <div [ngClass]="{'blur-md': isModalOpen}" class="p-4 md:p-8">
-    <!-- Header de la galería -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-      <!-- Contenedor del título, botones y datos de carpetas -->
       <div class="flex flex-col md:flex-row md:items-center w-full space-y-2 md:space-y-0">
 
-        <!-- Contenedor del título y botones -->
         <div class="flex items-center justify-between w-full">
-          <!-- Título y Botón de Atrás -->
           <div class="flex flex-col space-x-2">
             <div class="flex items-center">
-              <!-- Botón de Atrás -->
               <button *ngIf="currentFolder" (click)="goBack()" class="flex items-center text-blue-600 hover:text-blue-700 transition duration-200 mr-3">
                 <fa-icon [icon]="faArrowLeft"></fa-icon>
                 <span class="md:inline ml-2">Atrás</span>
               </button>
 
-              <!-- Título Dinámico -->
-              <h2 class="text-2xl md:text-4xl font-bold text-gray-900">
-                {{ currentFolder ? currentFolder : 'Galería de Medios' }}
-              </h2>
+              <h2 class="text-2xl md:text-4xl font-bold text-gray-900">{{ currentFolder ? currentFolder : 'Galería de Medios' }}</h2>
             </div>
 
-            <!-- Datos de carpetas y archivos -->
             <div class="flex space-x-4 text-gray-600 text-sm md:text-base mt-4 md:mt-0 md:ml-4">
               <div *ngIf="!currentFolder">
                 <p>Total de carpetas: <span class="font-semibold">{{ folders.length }}</span></p>
@@ -37,21 +27,17 @@
             </div>
           </div>
 
-          <!-- Botones de acción -->
           <div class="flex items-center space-x-2 ml-auto">
-            <!-- Botón de Crear Carpeta -->
             <button *ngIf="!currentFolder" (click)="openCreateFolderModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
               <fa-icon [icon]="faFolder"></fa-icon>
               <span class="hidden md:inline ml-2">Crear Carpeta</span>
             </button>
 
-            <!-- Botón de selección múltiple -->
             <button *ngIf="hasFiles" (click)="toggleMultiSelect()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
               <fa-icon [icon]="multiSelectMode ? faTimes : faCheckDouble"></fa-icon>
               <span class="hidden md:inline ml-2">{{ multiSelectMode ? "Cancelar selección múltiple" : "Seleccionar múltiples" }}</span>
             </button>
 
-            <!-- Botón para eliminar seleccionados -->
             <button *ngIf="multiSelectMode && mediaList.length > 0" (click)="deleteSelectedMedia()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200 flex items-center">
               <fa-icon [icon]="faTrash"></fa-icon>
               <span class="hidden md:inline ml-2">Eliminar seleccionados</span>
@@ -62,13 +48,11 @@
               <span class="hidden md:inline ml-2">Seleccionar todas</span>
             </button>
 
-            <!-- Botón para abrir el modal de subir archivos -->
             <button (click)="openUploadFilesModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center transition duration-200">
               <fa-icon [icon]="faUpload"></fa-icon>
               <span class="hidden md:inline ml-2">Subir Archivos</span>
             </button>
 
-            <!-- Botón para cambiar el modo de vista en móviles -->
             <div class="flex justify-end md:hidden">
               <button (click)="toggleViewMode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200">
                 <fa-icon [icon]="viewMode === 'list' ? faThLarge : faList"></fa-icon>
@@ -79,21 +63,13 @@
       </div>
     </div>
 
-    <!-- Barra de búsqueda de carpetas -->
     <div *ngIf="!currentFolder" class="mb-4">
       <div class="relative">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          placeholder="Buscar carpetas..."
-          class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-          (input)="filterFolders()"
-        />
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar carpetas..." class="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" (input)="filterFolders()"/>
         <fa-icon [icon]="faSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></fa-icon>
       </div>
     </div>
 
-    <!-- Lista de carpetas -->
     <div *ngIf="!currentFolder" [ngClass]="{'grid-cols-1': viewMode === 'list', 'grid-cols-2': viewMode === 'grid'}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
       <div *ngFor="let folder of filteredFolders" class="bg-white p-4 rounded-lg shadow-lg relative cursor-pointer hover:shadow-xl transition duration-200 flex justify-between items-center">
         <div class="flex-1 min-w-0" (click)="openFolder(folder)">
@@ -113,7 +89,6 @@
       </div>
     </div>
 
-    <!-- Botón para mover a la raíz -->
     <div *ngIf="currentFolder" class="mb-4">
       <div class="bg-blue-100 text-blue-700 p-4 rounded-lg text-center cursor-pointer hover:bg-blue-200 transition duration-200 flex items-center justify-center space-x-2" (drop)="onDropToRoot($event)" (dragover)="allowDrop($event)">
         <fa-icon [icon]="faLevelUpAlt"></fa-icon>
@@ -121,7 +96,6 @@
       </div>
     </div>
 
-    <!-- Lista de medios en la carpeta -->
     <div *ngIf="mediaList.length > 0; else noMedia" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
       <div *ngFor="let media of mediaList" class="rounded-lg shadow-lg relative overflow-hidden hover:shadow-xl transition duration-200" draggable="true" (dragstart)="onDragStart($event, media)">
         <div class="absolute top-2 left-2 flex items-center space-x-2">
@@ -147,18 +121,14 @@
     </div>
   </div>
 
-  <!-- Sin medios disponibles -->
   <ng-template #noMedia>
     <p class="text-center text-gray-500">No hay imágenes o videos disponibles.</p>
   </ng-template>
 
-  <!-- Modal para mostrar medios en grande -->
   <div *ngIf="isModalOpen && selectedMedia && selectedMedia.url" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" (click)="closeModal()" (swiperight)="navigateNext()" (swipeleft)="navigatePrevious()" (swipedown)="closeModal()">
-    <!-- Contenedor del modal -->
     <div class="relative w-full h-full max-w-4xl max-h-full flex items-center justify-center overflow-hidden p-4" (click)="$event.stopPropagation()">
       <button (click)="closeModal()" class="absolute top-2 right-2 text-white text-3xl">&times;</button>
 
-      <!-- Flechas de Navegación -->
       <button (click)="navigatePrevious()" class="absolute left-0 top-1/2 transform -translate-y-1/2 text-white text-3xl bg-black bg-opacity-50 rounded-full p-2 cursor-pointer hover:bg-opacity-75 transition duration-200 z-50">
         <fa-icon [icon]="faChevronLeft"></fa-icon>
       </button>
@@ -166,7 +136,6 @@
         <fa-icon [icon]="faChevronRight"></fa-icon>
       </button>
 
-      <!-- Contenido del modal -->
       <ng-container *ngIf="isVideo(selectedMedia.url); else imageModal">
         <video [src]="selectedMedia.url" controls autoplay muted class="max-w-full max-h-screen rounded-lg shadow-lg"></video>
       </ng-container>
@@ -177,54 +146,30 @@
     </div>
   </div>
 
-  <!-- Modal para crear carpeta -->
   <div *ngIf="isCreateFolderModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
       <h3 class="text-xl font-semibold mb-4">Crear nueva carpeta</h3>
-      <input
-        type="text"
-        [(ngModel)]="newFolderName"
-        placeholder="Nombre de la carpeta"
-        class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 mb-4"
-        (keydown.enter)="createFolder()"
-      />
+      <input type="text" [(ngModel)]="newFolderName" placeholder="Nombre de la carpeta" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 mb-4" (keydown.enter)="createFolder()"/>
       <div class="flex justify-end space-x-2">
-        <button (click)="closeCreateFolderModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition duration-200">
-          Cancelar
-        </button>
-        <button (click)="createFolder()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200">
-          Crear
-        </button>
+        <button (click)="closeCreateFolderModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition duration-200">Cancelar</button>
+        <button (click)="createFolder()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200">Crear</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal para renombrar carpeta -->
   <div *ngIf="isRenameFolderModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
       <h3 class="text-xl font-semibold mb-4">Renombrar carpeta</h3>
-      <input
-        type="text"
-        [(ngModel)]="newFolderName"
-        placeholder="Nuevo nombre de la carpeta"
-        class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 mb-4"
-        (keydown.enter)="renameFolder()"
-      />
+      <input type="text" [(ngModel)]="newFolderName" placeholder="Nuevo nombre de la carpeta" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 mb-4" (keydown.enter)="renameFolder()"/>
       <div class="flex justify-end space-x-2">
-        <button (click)="closeRenameFolderModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition duration-200">
-          Cancelar
-        </button>
-        <button (click)="renameFolder()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition duration-200">
-          Renombrar
-        </button>
+        <button (click)="closeRenameFolderModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition duration-200">Cancelar</button>
+        <button (click)="renameFolder()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition duration-200">Renombrar</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal para subir archivos -->
   <div *ngIf="isUploadFilesModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="w-full max-w-lg bg-white rounded-lg shadow-md p-6 space-y-6">
-      <!-- Título y botón de cierre -->
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-semibold text-gray-800">Subir Archivos</h2>
         <button (click)="closeUploadFilesModal()" class="text-gray-600 hover:text-gray-800 focus:outline-none">

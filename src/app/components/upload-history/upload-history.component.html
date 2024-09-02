@@ -1,25 +1,26 @@
 <div class="relative">
   <button (click)="toggleDropdown()" class="relative focus:outline-none">
     <fa-icon [icon]="faBell" class="text-white text-xl md:text-2xl"></fa-icon>
-    <span *ngIf="history.length" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs md:text-sm font-semibold rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center">
-      {{ history.length }}
-    </span>
+    <span *ngIf="history.length" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs md:text-sm font-semibold rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center">{{ history.length }}</span>
   </button>
 
   <div *ngIf="isOpen" class="absolute right-0 mt-2 w-72 md:w-80 bg-white shadow-lg rounded-lg z-50 p-4">
     <div class="border-b pb-2 mb-2">
       <h2 class="text-lg font-semibold text-center text-black">Notificaciones</h2>
     </div>
+
     <div class="max-h-64 overflow-y-auto space-y-2">
       <div *ngFor="let item of history" class="flex justify-between items-center bg-blue-100 p-3 md:p-4 rounded-lg">
         <div>
           <p class="text-sm font-semibold text-gray-700">{{ item.folder }}</p>
           <p class="text-xs text-gray-600">{{ item.date | date: 'dd/MM/yyyy, hh:mm a' }}</p>
         </div>
+
         <button (click)="removeItem(item)" class="text-red-500 hover:text-red-600 transition duration-200">
           <fa-icon [icon]="faTimes"></fa-icon>
         </button>
       </div>
+      
       <div *ngIf="history.length === 0" class="text-center p-4 text-gray-500">No hay notificaciones.</div>
     </div>
   </div>

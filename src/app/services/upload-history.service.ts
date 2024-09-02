@@ -21,13 +21,13 @@ export class UploadHistoryService {
   addToHistory(item: UploadHistoryItem) {
     this.uploadHistory.unshift(item);
     if (this.uploadHistory.length > 10) {
-      this.uploadHistory.pop(); // Limita a las últimas 10 subidas
+      this.uploadHistory.pop();
     }
     this.saveHistory();
   }
 
   removeFromHistory(item: UploadHistoryItem) {
-    this.uploadHistory = this.uploadHistory.filter(i => i !== item);
+    this.uploadHistory = this.uploadHistory.filter((i) => i !== item);
     this.saveHistory();
   }
 

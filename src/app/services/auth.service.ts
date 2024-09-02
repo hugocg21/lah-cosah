@@ -18,25 +18,21 @@ export class AuthService {
   login(username: string, password: string): Observable<void> {
     const email = username === 'user' ? this.email : username;
 
-    return from(this.afAuth.signInWithEmailAndPassword(email, password)).pipe(
-      map(() => {
-        this.afAuth.idToken.subscribe((token: string | null) => {
-          if (token) {
-            sessionStorage.setItem('authToken', token);
-            this.loggedIn.next(true); // Cambia el estado de autenticación
-          }
-        });
-      })
-    );
+    return from(this.afAuth.signInWithEmailAndPassword(email, password)).pipe(map(() => {
+      this.afAuth.idToken.subscribe((token: string | null) => {
+        if (token) {
+          sessionStorage.setItem('authToken', token);
+          this.loggedIn.next(true);
+        }
+      });
+    }));
   }
 
   logout(): Observable<void> {
-    return from(this.afAuth.signOut()).pipe(
-      map(() => {
-        sessionStorage.removeItem('authToken');
-        this.loggedIn.next(false); // Cambia el estado de autenticación
-      })
-    );
+    return from(this.afAuth.signOut()).pipe(map(() => {
+      sessionStorage.removeItem('authToken');
+      this.loggedIn.next(false);
+    }));
   }
 
   isAuthenticated(): boolean {

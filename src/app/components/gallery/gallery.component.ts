@@ -90,7 +90,7 @@ export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit
 
         this.calculateTotalMediaCount();
       } else {
-        // Redirigir al login u otra acción
+
         console.error('Usuario no autenticado');
       }
     });
@@ -198,7 +198,7 @@ export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit
 
   openFolder(folder: string): void {
     this.currentFolder = folder;
-    localStorage.setItem('currentFolder', folder); // Guardar en localStorage
+    localStorage.setItem('currentFolder', folder);
     this.mediaList = [];
     this.hasFiles = false;
     this.currentFolderMediaCount = 0;
@@ -207,7 +207,7 @@ export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit
 
   goBack(): void {
     this.currentFolder = null;
-    localStorage.removeItem('currentFolder'); // Eliminar de localStorage
+    localStorage.removeItem('currentFolder');
     this.mediaList = [];
     this.hasFiles = false;
     this.currentFolderMediaCount = 0;
@@ -259,23 +259,23 @@ export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit
     this.selectedFiles = Array.from(event.target.files) as File[];
   }
 
-  // uploadFiles(): void {
-  //   if (this.selectedFiles.length > 0) {
-  //     this.mediaService.uploadMedia(this.selectedFiles, this.selectedFolder).subscribe(
-  //       () => {
-  //         alert('Archivos subidos con éxito');
-  //         this.closeUploadFilesModal();
-  //         this.loadMedia();
-  //       },
-  //       (error) => {
-  //         console.error('Error al subir los archivos:', error);
-  //         alert('Error al subir los archivos');
-  //       }
-  //     );
-  //   } else {
-  //     alert('Por favor selecciona un archivo primero');
-  //   }
-  // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   uploadFiles(): void {
     if (this.selectedFiles.length > 0) {
