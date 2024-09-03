@@ -104,7 +104,7 @@
         </div>
 
         <ng-container *ngIf="isVideo(media.url); else imageTemplate">
-          <video #videoRef [src]="media.url" autoplay muted loop class="w-full h-32 md:h-48 object-cover cursor-pointer" (click)="openModal(media, videoRef)"></video>
+          <video #videoRef [src]="media.url" autoplay muted loop playsinline class="w-full h-32 md:h-48 object-cover cursor-pointer" (click)="openModal(media, videoRef)"></video>
         </ng-container>
 
         <ng-template #imageTemplate>

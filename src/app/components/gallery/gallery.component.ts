@@ -73,7 +73,7 @@ export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit
 
   viewMode: 'list' | 'grid' = 'grid';
 
-  constructor(private mediaService: MediaService, private uploadHistoryService: UploadHistoryService, private authService: AuthService) {}
+  constructor(private mediaService: MediaService, private uploadHistoryService: UploadHistoryService, private authService: AuthService, private elementRef: ElementRef) {}
 
   ngOnInit(): void {
     this.authService.isLoggedIn().subscribe((loggedIn) => {
@@ -96,8 +96,22 @@ export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit
     });
   }
 
-  ngAfterViewInit(): void {
-    this.ensureVideosAreMuted();
+  ngAfterViewInit() {
+    const videoElements: NodeListOf<HTMLVideoElement> = this.elementRef.nativeElement.querySelectorAll('video');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          video.play().catch(error => console.log('Error playing video:', error));
+        } else {
+          video.pause();
+        }
+      });
+    });
+
+    videoElements.forEach(video => {
+      observer.observe(video);
+    });
   }
 
   ngAfterViewChecked(): void {
@@ -258,24 +272,6 @@ export class GalleryComponent implements OnInit, AfterViewChecked, AfterViewInit
   onFileSelected(event: any): void {
     this.selectedFiles = Array.from(event.target.files) as File[];
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   uploadFiles(): void {
     if (this.selectedFiles.length > 0) {
